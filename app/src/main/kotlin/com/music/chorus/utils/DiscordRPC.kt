@@ -42,9 +42,9 @@ class DiscordRPC(
 ) {
     companion object {
         private const val PAUSE_IMAGE_URL =
-            "https://raw.githubusercontent.com/slice-of-fun/Chorus-Music/main/assets/paused.png"
+            "https://raw.githubusercontent.com/chorus-mu/Chorus-Music/main/assets/paused.png"
         private const val APP_ICON_URL =
-            "https://raw.githubusercontent.com/slice-of-fun/Chorus-Music/main/assets/Chorus-new.png"
+            "https://raw.githubusercontent.com/chorus-mu/Chorus-Music/main/assets/Chorus-new.png"
         private const val TAG = "DiscordRPC"
     }
 
@@ -285,7 +285,7 @@ class DiscordRPC(
         val button2UrlSource = context.dataStore[DiscordActivityButton2UrlSourceKey] ?: "custom"
         val button2CustomUrl =
             context.dataStore[DiscordActivityButton2CustomUrlKey]
-                ?: "https://github.com/slice-of-fun/Chorus-Music"
+                ?: "https://github.com/chorus-mu/Chorus-Music"
 
         return buildList {
             if (button1Enabled) {
@@ -313,8 +313,8 @@ class DiscordRPC(
             "songurl" -> {
                 song.song.id
                     .takeUnless { song.song.isLocal || it.isLocalMediaId() }
-                    ?.let { "https://slice-of-fun.github.io/Chorus-Music/?v=$it" }
-                    ?: "https://github.com/slice-of-fun/Chorus-Music"
+                    ?.let { "https://chorus-mu.github.io/chorusweb/?v=$it" }
+                    ?: "https://github.com/chorus-mu/Chorus-Music"
             }
 
             "artisturl" -> {

@@ -131,8 +131,8 @@ highlightKey: String? = null) {
                     AboutActionRow(
                         icon = painterResource(R.drawable.github),
                         title = "GitHub",
-                        subtitle = "slice-of-fun/Chorus-Music",
-                        onClick = { uriHandler.openUri("https://github.com/slice-of-fun/Chorus-Music") },
+                        subtitle = "chorus-mu/Chorus-Music",
+                        onClick = { uriHandler.openUri("https://github.com/chorus-mu/Chorus-Music") },
                     )
                 }
             }

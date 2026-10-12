@@ -235,7 +235,7 @@ fun SettingDialoge(
                         text = "Privacy Policy",
                         style = MaterialTheme.typography.bodySmall,
                         color = onSecondaryColor,
-                        modifier = Modifier.clickable { uriHandler.openUri("https://slice-of-fun.github.io/Chorus-Music/p/privacy-policy") }
+                        modifier = Modifier.clickable { uriHandler.openUri("https://chorus-mu.github.io/chorusweb/p/privacy-policy") }
                             .padding(4.dp)
                     )
                     Text(text = " \u2022 ", color = onSecondaryColor, style = MaterialTheme.typography.bodySmall)
@@ -243,7 +243,7 @@ fun SettingDialoge(
                         text = "Terms of Service",
                         style = MaterialTheme.typography.bodySmall,
                         color = onSecondaryColor,
-                        modifier = Modifier.clickable { uriHandler.openUri("https://slice-of-fun.github.io/Chorus-Music/p/toc") }
+                        modifier = Modifier.clickable { uriHandler.openUri("https://chorus-mu.github.io/chorusweb/p/toc") }
                             .padding(4.dp)
                     )
                 }

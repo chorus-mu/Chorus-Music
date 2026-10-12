@@ -335,7 +335,7 @@ fun UpdateScreen(navController: NavHostController) {
                                                 context.startActivity(installIntent)
                                             }
                                         } else {
-                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/slice-of-fun/Chorus-Music/releases/download/${currentStatus.version}/chorusmusic.apk"
+                                            val urlToDownload = currentStatus.apkUrl ?: "https://github.com/chorus-mu/Chorus-Music/releases/download/${currentStatus.version}/chorusmusic.apk"
                                             
                                             val constraints = Constraints.Builder()
                                                 .setRequiredNetworkType(NetworkType.CONNECTED)
@@ -657,7 +657,7 @@ suspend fun checkForUpdate(
 ) {
     withContext(Dispatchers.IO) {
         try {
-            val url = URL("https://api.github.com/repos/slice-of-fun/Chorus-Music/releases/latest")
+            val url = URL("https://api.github.com/repos/chorus-mu/Chorus-Music/releases/latest")
             val json = url.openStream().bufferedReader().use { it.readText() }
             val targetRelease = JSONObject(json)
             
@@ -677,7 +677,7 @@ suspend fun checkForUpdate(
                 var imageUrl: String? = null
                 try {
                     val changelogUrl =
-                        URL("https://github.com/slice-of-fun/Chorus-Music/releases/download/$tagWithPrefix/changelog.json")
+                        URL("https://github.com/chorus-mu/Chorus-Music/releases/download/$tagWithPrefix/changelog.json")
                     val changelogJson = changelogUrl.openStream().bufferedReader().use { it.readText() }
                     val changelogData = JSONObject(changelogJson)
 

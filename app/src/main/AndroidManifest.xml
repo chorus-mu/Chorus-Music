@@ -139,7 +139,8 @@
                 <data android:pathPrefix="/browse/" />
                 <!-- search prefix -->
                 <data android:pathPrefix="/search" />
-                <data android:host="slice-of-fun.github.io" />
+                <data android:host="chorus-mu.github.io" />
+                <data android:pathPrefix="/chorusweb/" />
                 <data android:pathPrefix="/Chorus-Music/" />
             </intent-filter>
 

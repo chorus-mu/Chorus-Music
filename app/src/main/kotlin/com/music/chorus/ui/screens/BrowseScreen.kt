@@ -2,11 +2,8 @@ package pushkar.chorus.music.ui.screens
 
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
  import androidx.compose.foundation.lazy.grid.GridCells
  import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
  import androidx.compose.foundation.lazy.grid.items
@@ -66,176 +63,84 @@ import androidx.compose.foundation.layout.height
      val coroutineScope = rememberCoroutineScope()
      val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
 
-     val isFluid = pushkar.chorus.music.ui.theme.isFluidTheme()
-     val gridState = androidx.compose.foundation.lazy.grid.rememberLazyGridState()
-     val fluidTitleProgress = pushkar.chorus.music.ui.component.rememberTitleCollapseProgressState(gridState)
-
-     if (isFluid) {
-         pushkar.chorus.music.ui.component.ScreenScaffold(
-             title = title.orEmpty(),
-             titleAlpha = 0f,
-             titleAlphaProvider = { fluidTitleProgress.value },
-             onBack = { navController.navigateUp() },
-         ) { chrome ->
-             LazyVerticalGrid(
-                 state = gridState,
-                 columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
-                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues(),
-                 modifier = Modifier.then(chrome.contentModifier())
-             ) {
-                 item(
-                     key = "browse_large_title",
-                     span = { androidx.compose.foundation.lazy.grid.GridItemSpan(maxLineSpan) }
-                 ) {
-                     Column {
-                         Spacer(Modifier.height(pushkar.chorus.music.ui.component.topBarHeight()))
-                         pushkar.chorus.music.ui.component.ScreenLargeTitle(title.orEmpty())
-                     }
-                 }
-
-                 items?.let { items ->
-                     items(
-                         items = items.distinctBy { it.id },
-                         key = { it.id }
-                     ) { item ->
-                         YouTubeGridItem(
-                             item = item,
-                             isPlaying = isPlaying,
-                             fillMaxWidth = true,
-                             coroutineScope = coroutineScope,
-                             modifier = Modifier
-                                 .combinedClickable(
-                                     onClick = {
+     Box(modifier = Modifier.fillMaxSize()) {
+         LazyVerticalGrid(
+             columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
+             contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
+         ) {
+             items?.let { items ->
+                 items(
+                     items = items.distinctBy { it.id },
+                     key = { it.id }
+                 ) { item ->
+                     YouTubeGridItem(
+                         item = item,
+                         isPlaying = isPlaying,
+                         fillMaxWidth = true,
+                         coroutineScope = coroutineScope,
+                         modifier = Modifier
+                             .combinedClickable(
+                                 onClick = {
+                                     when (item) {
+                                         is AlbumItem -> navController.navigate("album/${item.id}")
+                                         is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
+                                         is ArtistItem -> navController.navigate("artist/${item.id}")
+                                         else -> {}
+                                     }
+                                 },
+                                 onLongClick = {
+                                     menuState.show {
                                          when (item) {
-                                             is AlbumItem -> navController.navigate("album/${item.id}")
-                                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
-                                             is ArtistItem -> navController.navigate("artist/${item.id}")
+                                             is AlbumItem ->
+                                                 YouTubeAlbumMenu(
+                                                     albumItem = item,
+                                                     navController = navController,
+                                                     onDismiss = menuState::dismiss
+                                                 )
+
+                                             is PlaylistItem -> {
+                                                 YouTubePlaylistMenu(
+                                                     playlist = item,
+                                                     coroutineScope = coroutineScope,
+                                                     onDismiss = menuState::dismiss
+                                                 )
+                                             }
+
+                                             is ArtistItem -> {
+                                                 YouTubeArtistMenu(
+                                                     artist = item,
+                                                     onDismiss = menuState::dismiss
+                                                 )
+                                             }
+
                                              else -> {}
                                          }
-                                     },
-                                     onLongClick = {
-                                         menuState.show {
-                                             when (item) {
-                                                 is AlbumItem ->
-                                                     YouTubeAlbumMenu(
-                                                         albumItem = item,
-                                                         navController = navController,
-                                                         onDismiss = menuState::dismiss
-                                                     )
-
-                                                 is PlaylistItem -> {
-                                                     YouTubePlaylistMenu(
-                                                         playlist = item,
-                                                         coroutineScope = coroutineScope,
-                                                         onDismiss = menuState::dismiss
-                                                     )
-                                                 }
-
-                                                 is ArtistItem -> {
-                                                     YouTubeArtistMenu(
-                                                         artist = item,
-                                                         onDismiss = menuState::dismiss
-                                                     )
-                                                 }
-
-                                                 else -> {}
-                                             }
-                                         }
                                      }
-                                 )
-                         )
-                     }
+                                 }
+                             )
+                     )
+                 }
 
-                     if (items.isEmpty()) {
-                         items(8) {
-                             ShimmerHost {
-                                 GridItemPlaceHolder(fillMaxWidth = true)
-                             }
+                 if (items.isEmpty()) {
+                     items(8) {
+                         ShimmerHost {
+                             GridItemPlaceHolder(fillMaxWidth = true)
                          }
                      }
                  }
              }
          }
-     } else {
-         Box(modifier = Modifier.fillMaxSize()) {
-             LazyVerticalGrid(
-                 columns = GridCells.Adaptive(minSize = GridThumbnailHeight + if (gridItemSize == GridItemSize.BIG) 24.dp else (-24).dp),
-                 contentPadding = LocalPlayerAwareWindowInsets.current.asPaddingValues()
-             ) {
-                 items?.let { items ->
-                     items(
-                         items = items.distinctBy { it.id },
-                         key = { it.id }
-                     ) { item ->
-                         YouTubeGridItem(
-                             item = item,
-                             isPlaying = isPlaying,
-                             fillMaxWidth = true,
-                             coroutineScope = coroutineScope,
-                             modifier = Modifier
-                                 .combinedClickable(
-                                     onClick = {
-                                         when (item) {
-                                             is AlbumItem -> navController.navigate("album/${item.id}")
-                                             is PlaylistItem -> navController.navigate("online_playlist/${item.id}")
-                                             is ArtistItem -> navController.navigate("artist/${item.id}")
-                                             else -> {}
-                                         }
-                                     },
-                                     onLongClick = {
-                                         menuState.show {
-                                             when (item) {
-                                                 is AlbumItem ->
-                                                     YouTubeAlbumMenu(
-                                                         albumItem = item,
-                                                         navController = navController,
-                                                         onDismiss = menuState::dismiss
-                                                     )
 
-                                                 is PlaylistItem -> {
-                                                     YouTubePlaylistMenu(
-                                                         playlist = item,
-                                                         coroutineScope = coroutineScope,
-                                                         onDismiss = menuState::dismiss
-                                                     )
-                                                 }
-
-                                                 is ArtistItem -> {
-                                                     YouTubeArtistMenu(
-                                                         artist = item,
-                                                         onDismiss = menuState::dismiss
-                                                     )
-                                                 }
-
-                                                 else -> {}
-                                             }
-                                         }
-                                     }
-                                 )
-                         )
-                     }
-
-                     if (items.isEmpty()) {
-                         items(8) {
-                             ShimmerHost {
-                                 GridItemPlaceHolder(fillMaxWidth = true)
-                             }
-                         }
-                     }
-                 }
-             }
-
-             CenterAlignedTopAppBar(
-                 title = { Text(title ?: "", fontWeight = FontWeight.Bold) },
-                 navigationIcon = {
-                     TopBarBackButton(navController = navController)
-                 },
-                 colors = TopAppBarDefaults.topAppBarColors(
-                     containerColor = Color.Transparent,
-                     scrolledContainerColor = Color.Transparent,
-                 ),
-                 scrollBehavior = scrollBehavior,
-             )
-         }
+         CenterAlignedTopAppBar(
+             title = { Text(title ?: "", fontWeight = FontWeight.Bold) },
+             navigationIcon = {
+                 TopBarBackButton(navController = navController)
+             },
+             colors = TopAppBarDefaults.topAppBarColors(
+                 containerColor = Color.Transparent,
+                 scrolledContainerColor = Color.Transparent,
+             ),
+             scrollBehavior = scrollBehavior,
+         )
      }
  }

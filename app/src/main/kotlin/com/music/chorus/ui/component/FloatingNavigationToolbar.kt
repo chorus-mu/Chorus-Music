@@ -71,11 +71,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
 import pushkar.chorus.music.ui.screens.Screens
-import pushkar.chorus.music.ui.theme.isFluidTheme
 
 @Composable
 fun FloatingNavigationToolbar(
@@ -95,23 +91,13 @@ fun FloatingNavigationToolbar(
     isSelected: (Screens) -> Boolean,
     onItemClick: (Screens, Boolean) -> Unit,
 ) {
-    val isFluid = isFluidTheme()
-    val toolbarContainerColor = if (isFluid) Color.Transparent else floatingToolbarContainerColor(pureBlack = pureBlack)
+    val toolbarContainerColor = floatingToolbarContainerColor(pureBlack = pureBlack)
     val toolbarColors = FloatingToolbarDefaults.standardFloatingToolbarColors(
         toolbarContainerColor = toolbarContainerColor,
     )
     val hasFabAction = onFabClick != null && fabIconRes != null
-    val toolbarShape = if (isFluid) ContinuousRoundedRectangle(32.dp) else RoundedCornerShape(32.dp)
-    val toolbarModifier = if (isFluid) {
-        Modifier
-            .widthIn(max = 480.dp)
-            .fluidGlass(
-                shape = toolbarShape,
-                intensity = GlassIntensity.Prominent,
-            )
-    } else {
-        Modifier.widthIn(max = 480.dp)
-    }
+    val toolbarShape = RoundedCornerShape(32.dp)
+    val toolbarModifier = Modifier.widthIn(max = 480.dp)
 
     BoxWithConstraints(
         modifier = modifier.fillMaxWidth(),
@@ -206,7 +192,7 @@ private fun ToolbarItemsContainer(
                         .fillMaxHeight()
                         .background(
                             color = floatingToolbarSelectedItemContainerColor(pureBlack),
-                            shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp)
+                            shape = RoundedCornerShape(24.dp)
                         )
                 )
             }
@@ -265,7 +251,7 @@ private fun FloatingNavigationToolbarItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(24.dp)
     val showLabel = selected && showSelectedLabel
     val transition = updateTransition(targetState = selected, label = "navItem_${screen.route}")
 
@@ -400,33 +386,17 @@ private fun floatingToolbarFabContentColor(pureBlack: Boolean): Color {
 
 @Composable
 private fun floatingToolbarSelectedItemContainerColor(pureBlack: Boolean): Color {
-    val isFluid = isFluidTheme()
-    return when {
-        isFluid && pureBlack -> Color.White.copy(alpha = 0.22f)
-        isFluid -> Color.White.copy(alpha = 0.40f)
-        pureBlack -> MaterialTheme.colorScheme.secondaryContainer
-        else -> MaterialTheme.colorScheme.secondaryContainer
-    }
+    return MaterialTheme.colorScheme.secondaryContainer
 }
 
 @Composable
 private fun floatingToolbarSelectedItemContentColor(pureBlack: Boolean): Color {
-    val isFluid = isFluidTheme()
-    return when {
-        isFluid && pureBlack -> Color.White
-        isFluid -> MaterialTheme.colorScheme.onSurface
-        else -> MaterialTheme.colorScheme.onSecondaryContainer
-    }
+    return MaterialTheme.colorScheme.onSecondaryContainer
 }
 
 @Composable
 private fun floatingToolbarItemContentColor(pureBlack: Boolean): Color {
-    val isFluid = isFluidTheme()
-    return when {
-        isFluid && pureBlack -> Color.White.copy(alpha = 0.75f)
-        isFluid -> MaterialTheme.colorScheme.onSurface.copy(alpha = 0.70f)
-        else -> MaterialTheme.colorScheme.onSurfaceVariant
-    }
+    return MaterialTheme.colorScheme.onSurfaceVariant
 }
 
 @Composable

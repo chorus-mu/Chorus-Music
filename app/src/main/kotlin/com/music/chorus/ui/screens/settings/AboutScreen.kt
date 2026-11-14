@@ -13,8 +13,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.*
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -134,10 +132,9 @@ highlightKey: String? = null) {
 
 @Composable
 private fun AboutAppCard() {
-    val isFluid = isFluidTheme()
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = if (isFluid) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
         ),
@@ -223,7 +220,7 @@ private fun AboutAppCard() {
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Surface(
-                    shape = if (isFluid) ContinuousRoundedRectangle(8.dp) else RoundedCornerShape(8.dp),
+                    shape = RoundedCornerShape(8.dp),
                     color = MaterialTheme.colorScheme.primary.copy(alpha = 0.10f),
                 ) {
                     Text(
@@ -236,7 +233,7 @@ private fun AboutAppCard() {
                 }
                 if (BuildConfig.DEBUG) {
                     Surface(
-                        shape = if (isFluid) ContinuousRoundedRectangle(8.dp) else RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.error.copy(alpha = 0.10f),
                     ) {
                         Text(
@@ -249,7 +246,7 @@ private fun AboutAppCard() {
                     }
                 } else {
                     Surface(
-                        shape = if (isFluid) ContinuousRoundedRectangle(8.dp) else RoundedCornerShape(8.dp),
+                        shape = RoundedCornerShape(8.dp),
                         color = MaterialTheme.colorScheme.secondary.copy(alpha = 0.10f),
                     ) {
                         Text(
@@ -281,7 +278,7 @@ private fun AboutSectionCard(
         )
         Card(
             modifier = Modifier.fillMaxWidth(),
-            shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+            shape = RoundedCornerShape(28.dp),
             colors = CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
             ),
@@ -302,7 +299,6 @@ private fun AboutActionRow(
     subtitle: String? = null,
     onClick: () -> Unit,
 ) {
-    val isFluid = isFluidTheme()
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
@@ -317,7 +313,7 @@ private fun AboutActionRow(
             .fillMaxWidth()
             .padding(horizontal = 6.dp, vertical = 2.dp)
             .graphicsLayer { scaleX = scale; scaleY = scale }
-            .clip(if (isFluid) ContinuousRoundedRectangle(22.dp) else RoundedCornerShape(22.dp))
+            .clip(RoundedCornerShape(22.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = ripple(),
@@ -331,7 +327,7 @@ private fun AboutActionRow(
         ) {
             Surface(
                 modifier = Modifier.size(42.dp),
-                shape = if (isFluid) ContinuousRoundedRectangle(14.dp) else RoundedCornerShape(14.dp),
+                shape = RoundedCornerShape(14.dp),
                 color = tint.copy(alpha = 0.10f),
             ) {
                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {

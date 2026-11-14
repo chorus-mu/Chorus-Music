@@ -18,20 +18,12 @@ import androidx.compose.ui.unit.dp
 import pushkar.chorus.music.constants.ListItemHeight
 import pushkar.chorus.music.constants.ListThumbnailSize
 import pushkar.chorus.music.constants.ThumbnailCornerRadius
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 
 @Composable
 fun ListItemPlaceHolder(
     modifier: Modifier = Modifier,
     thumbnailShape: Shape = RoundedCornerShape(ThumbnailCornerRadius),
 ) {
-    val effectiveShape = if (isFluidTheme() && thumbnailShape is RoundedCornerShape) {
-        ContinuousRoundedRectangle(ThumbnailCornerRadius)
-    } else {
-        thumbnailShape
-    }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
@@ -45,7 +37,7 @@ fun ListItemPlaceHolder(
             Modifier
                 .padding(6.dp)
                 .size(ListThumbnailSize)
-                .clip(effectiveShape)
+                .clip(thumbnailShape)
                 .background(MaterialTheme.colorScheme.onSurface),
         )
 

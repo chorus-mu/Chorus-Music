@@ -23,8 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import android.widget.Toast
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -319,7 +317,7 @@ fun StorageSettings(
     if (showCacheWarningDialog) {
         AlertDialog(
             onDismissRequest = { showCacheWarningDialog = false },
-            shape = if (isFluidTheme()) ContinuousRoundedRectangle(26.dp) else AlertDialogDefaults.shape,
+            shape = AlertDialogDefaults.shape,
             title = { Text(stringResource(R.string.cache_size_warning_title)) },
             text = {
                 Text(
@@ -336,7 +334,7 @@ fun StorageSettings(
                         onConfirmAction()
                         showCacheWarningDialog = false
                     },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.textShape,
+                    shape = ButtonDefaults.textShape,
                 ) {
                     Text(
                         stringResource(R.string.cache_size_warning_confirm),
@@ -347,7 +345,7 @@ fun StorageSettings(
             dismissButton = {
                 TextButton(
                     onClick = { showCacheWarningDialog = false },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.textShape,
+                    shape = ButtonDefaults.textShape,
                 ) {
                     Text(stringResource(id = android.R.string.cancel))
                 }

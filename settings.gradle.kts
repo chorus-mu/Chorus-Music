@@ -28,6 +28,5 @@ include(
     ":canvas",
     ":chorusmusiccanvas",
     ":applecanvas",
-    ":unison",
-    ":hig"
+    ":unison"
 )

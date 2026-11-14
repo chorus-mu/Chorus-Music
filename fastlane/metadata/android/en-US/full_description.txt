@@ -1,8 +1,8 @@
-Chorus Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, live video canvases, dual UI design systems, and environment-aware music recognition.
+Chorus Music delivers a seamless, premium listening experience by leveraging YouTube Music's vast library — without the ads. It adds powerful extras including offline downloads, real-time synchronized lyrics, live video canvases, and environment-aware music recognition.
 
 Features:
 * Ad-Free — Stream without any interruptions.
-* Dual UI System — Switch seamlessly between dynamic Material 3 Expressive and Apple Cupertino-inspired Fluid UI with real-time liquid glass shaders and player artwork morph transitions.
+* Material 3 Expressive — Dynamic theming and modern Material 3 Expressive design across the app.
 * Seamless Playback — Switch effortlessly between audio-only and video modes.
 * Background Playback — Listen while using other apps or with the screen off.
 * Offline Mode — Download tracks, albums, and playlists via a dedicated download manager.

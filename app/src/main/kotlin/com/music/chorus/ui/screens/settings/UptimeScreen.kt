@@ -24,8 +24,6 @@ import pushkar.chorus.music.LocalPlayerAwareWindowInsets
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import pushkar.chorus.music.ui.component.TopBarBackButton
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
@@ -220,7 +218,7 @@ highlightKey: String? = null) {
 fun ServiceStatusCard(service: ServiceStatus) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(20.dp) else MaterialTheme.shapes.large,
+        shape = MaterialTheme.shapes.large,
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         )

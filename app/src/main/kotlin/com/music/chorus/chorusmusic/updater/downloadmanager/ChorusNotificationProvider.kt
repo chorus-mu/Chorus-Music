@@ -11,12 +11,13 @@ import androidx.media3.session.DefaultMediaNotificationProvider
 import androidx.media3.session.MediaNotification
 import androidx.media3.session.MediaSession
 import com.google.common.collect.ImmutableList
+import pushkar.chorus.music.R
 
 @OptIn(UnstableApi::class)
 class ChorusNotificationProvider(
-    context: Context,
+    private val context: Context,
     notificationIdProvider: DefaultMediaNotificationProvider.NotificationIdProvider,
-    channelId: String,
+    private val channelId: String,
     channelNameResourceId: Int,
 ) : MediaNotification.Provider {
 
@@ -56,6 +57,8 @@ class ChorusNotificationProvider(
         } else {
             notification.flags = notification.flags and Notification.FLAG_ONGOING_EVENT.inv()
         }
+
+        notification.visibility = Notification.VISIBILITY_PUBLIC
 
         return MediaNotification(mediaNotification.notificationId, notification)
     }

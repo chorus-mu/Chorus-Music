@@ -152,8 +152,6 @@ import com.music.innertube.models.WatchEndpoint
 import pushkar.chorus.music.constants.AppBarHeight
 import pushkar.chorus.music.constants.AiRecommendationsKey
 import pushkar.chorus.music.constants.AppLanguageKey
-import pushkar.chorus.music.constants.AppThemeMode
-import pushkar.chorus.music.constants.AppThemeModeKey
 import pushkar.chorus.music.constants.DarkModeKey
 import pushkar.chorus.music.constants.DefaultOpenTabKey
 import pushkar.chorus.music.constants.DisableScreenshotKey
@@ -191,9 +189,6 @@ import pushkar.chorus.music.playback.MusicService.MusicBinder
 import pushkar.chorus.music.playback.PlayerConnection
 import pushkar.chorus.music.playback.queues.YouTubeQueue
 import pushkar.chorus.music.ui.component.*
-import pushkar.chorus.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
-import pushkar.chorus.music.ui.component.backdrop.backdrops.layerBackdrop
-import pushkar.chorus.music.ui.fluid.foundation.LocalAppBackdrop
 import pushkar.chorus.music.ui.menu.YouTubeSongMenu
 import pushkar.chorus.music.ui.player.BottomSheetPlayer
 import pushkar.chorus.music.ui.screens.Screens
@@ -483,7 +478,6 @@ class MainActivity : ComponentActivity() {
             }
         }
 
-        val appThemeMode by rememberEnumPreference(AppThemeModeKey, defaultValue = AppThemeMode.MaterialUI)
         val darkTheme by rememberEnumPreference(DarkModeKey, defaultValue = DarkMode.AUTO)
         val isSystemInDarkTheme = isSystemInDarkTheme()
         val useDarkTheme = remember(darkTheme, isSystemInDarkTheme) {
@@ -550,7 +544,6 @@ class MainActivity : ComponentActivity() {
         var lastScrollHapticTime by remember { mutableStateOf(0L) }
 
         chorusmusicTheme(
-            themeMode = appThemeMode,
             darkTheme = useDarkTheme,
             pureBlack = pureBlack,
             themeColor = themeColor,
@@ -861,22 +854,10 @@ class MainActivity : ComponentActivity() {
                 val showHistoryButton = remember(pauseListenHistory, eventCount) {
                     !(pauseListenHistory && eventCount == 0)
                 }
-                val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
-                val appBackdrop = rememberLayerBackdrop(
-                    onDraw = remember(baseBg) {
-                        val bg = baseBg
-                        {
-                            drawRect(bg)
-                            drawContent()
-                        }
-                    }
-                )
-
                 val ringtoneViewModel: RingtoneViewModel = viewModel()
                 val ringtoneUiState by ringtoneViewModel.uiState.collectAsState()
 
                 CompositionLocalProvider(
-                    LocalAppBackdrop provides appBackdrop,
                     LocalRingtoneViewModel provides ringtoneViewModel,
                     LocalDatabase provides database,
                     LocalContentColor provides if (pureBlack) Color.White else contentColorFor(MaterialTheme.colorScheme.surface),
@@ -935,55 +916,51 @@ class MainActivity : ComponentActivity() {
                             .nestedScroll(topAppBarScrollBehavior.nestedScrollConnection)
                             .nestedScroll(floatingNavBarScrollConnection)
                     ) {
-                        Row(Modifier.fillMaxSize().layerBackdrop(appBackdrop)) {
-                            CompositionLocalProvider(
-                                LocalAppBackdrop provides null
-                            ) {
-                                val onRailItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
-                                    { screen: Screens, isSelected: Boolean ->
-                                        if (playerBottomSheetState.isExpanded) {
-                                            playerBottomSheetState.collapseSoft()
-                                        }
+                        Row(Modifier.fillMaxSize()) {
+                            val onRailItemClick: (Screens, Boolean) -> Unit = remember(navController, coroutineScope, topAppBarScrollBehavior, playerBottomSheetState) {
+                                { screen: Screens, isSelected: Boolean ->
+                                    if (playerBottomSheetState.isExpanded) {
+                                        playerBottomSheetState.collapseSoft()
+                                    }
 
-                                        if (isSelected) {
-                                            navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
-                                            coroutineScope.launch {
-                                                topAppBarScrollBehavior.state.resetHeightOffset()
+                                    if (isSelected) {
+                                        navController.currentBackStackEntry?.savedStateHandle?.set("scrollToTop", true)
+                                        coroutineScope.launch {
+                                            topAppBarScrollBehavior.state.resetHeightOffset()
+                                        }
+                                    } else {
+                                        navController.navigate(screen.route) {
+                                            popUpTo(navController.graph.startDestinationId) {
+                                                saveState = true
                                             }
-                                        } else {
-                                            navController.navigate(screen.route) {
-                                                popUpTo(navController.graph.startDestinationId) {
-                                                    saveState = true
-                                                }
-                                                launchSingleTop = true
-                                                restoreState = true
-                                            }
+                                            launchSingleTop = true
+                                            restoreState = true
                                         }
                                     }
                                 }
+                            }
 
-                                if (showRail && currentRoute != "update") {
-                                    AppNavigationRail(
-                                        navigationItems = navigationItems,
-                                        currentRoute = currentRoute,
-                                        onItemClick = onRailItemClick,
-                                        pureBlack = pureBlack
-                                    )
-                                }
-                                Box(Modifier.weight(1f)) {
-                                    AppNavHost(
-                                        navController = navController,
-                                        navigationItems = navigationItems,
-                                        startDestination = when (tabOpenedFromShortcut ?: defaultOpenTab) {
-                                            NavigationTab.HOME -> Screens.Home
-                                            NavigationTab.LIBRARY -> Screens.Library
-                                            else -> Screens.Home
-                                        }.route,
-                                        topAppBarScrollBehavior = topAppBarScrollBehavior,
-                                        activity = this@MainActivity,
-                                        snackbarHostState = snackbarHostState,
-                                    )
-                                }
+                            if (showRail && currentRoute != "update") {
+                                AppNavigationRail(
+                                    navigationItems = navigationItems,
+                                    currentRoute = currentRoute,
+                                    onItemClick = onRailItemClick,
+                                    pureBlack = pureBlack
+                                )
+                            }
+                            Box(Modifier.weight(1f)) {
+                                AppNavHost(
+                                    navController = navController,
+                                    navigationItems = navigationItems,
+                                    startDestination = when (tabOpenedFromShortcut ?: defaultOpenTab) {
+                                        NavigationTab.HOME -> Screens.Home
+                                        NavigationTab.LIBRARY -> Screens.Library
+                                        else -> Screens.Home
+                                    }.route,
+                                    topAppBarScrollBehavior = topAppBarScrollBehavior,
+                                    activity = this@MainActivity,
+                                    snackbarHostState = snackbarHostState,
+                                )
                             }
                         }
                     }

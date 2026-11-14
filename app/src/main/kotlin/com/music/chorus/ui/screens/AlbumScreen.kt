@@ -29,8 +29,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ContainedLoadingIndicator
 import androidx.compose.material3.ButtonGroupDefaults
@@ -512,7 +510,7 @@ fun AlbumScreen(
                                             update(albumWithSongs.album.toggleLike())
                                         }
                                     },
-                                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                                    shape = CircleShape,
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     modifier = Modifier.size(48.dp)
                                 ) {
@@ -554,7 +552,7 @@ fun AlbumScreen(
                                             )
                                         }
                                     },
-                                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                                    shape = CircleShape,
                                     colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                                         containerColor = MaterialTheme.colorScheme.primary,
                                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -601,7 +599,7 @@ fun AlbumScreen(
                                             LocalAlbumRadio(albumWithSongs.copy(songs = albumWithSongs.songs.shuffled())),
                                         )
                                     },
-                                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                                    shape = CircleShape,
                                     color = MaterialTheme.colorScheme.surfaceVariant,
                                     modifier = Modifier.size(48.dp)
                                 ) {

@@ -23,11 +23,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.ui.graphics.Color
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -92,17 +87,12 @@ fun CommentSheet(
         }
     }
 
-    val isFluid = isFluidTheme()
-    val sheetShape = if (isFluid) ContinuousRoundedRectangle(topStart = 32.dp, topEnd = 32.dp) else BottomSheetDefaults.ExpandedShape
-    val sheetContainerColor = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.surfaceContainer
-
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         dragHandle = { BottomSheetDefaults.DragHandle() },
-        shape = sheetShape,
-        containerColor = sheetContainerColor,
-        modifier = if (isFluid) Modifier.fillMaxHeight().clip(sheetShape).fluidGlass(shape = sheetShape, intensity = GlassIntensity.Prominent) else Modifier
+        shape = BottomSheetDefaults.ExpandedShape,
+        containerColor = MaterialTheme.colorScheme.surfaceContainer,
     ) {
         Column(modifier = Modifier.fillMaxHeight()) {
 

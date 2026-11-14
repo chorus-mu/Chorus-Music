@@ -47,12 +47,6 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import pushkar.chorus.music.R
 import pushkar.chorus.music.artistvideo.ArtistVideo
-import pushkar.chorus.music.constants.AppThemeMode
-import pushkar.chorus.music.constants.AppThemeModeKey
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidBounceClick
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import pushkar.chorus.music.ui.utils.resize
 import pushkar.chorus.music.utils.rememberPreference
 
@@ -74,8 +68,6 @@ fun ArtistHero(
     headerOffset: Int = 0,
     modifier: Modifier = Modifier
 ) {
-    val isFluid = isFluidTheme()
-
     val configuration = androidx.compose.ui.platform.LocalConfiguration.current
     val isTablet = configuration.screenWidthDp > 600
     val artSizeDp = if (isTablet) 300.dp else configuration.screenWidthDp.dp
@@ -196,8 +188,8 @@ fun ArtistHero(
             ) {
                 androidx.compose.material3.Surface(
                     onClick = onToggleFollow,
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
-                    color = if (isFluidTheme()) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.secondaryContainer,
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.size(48.dp)
                 ) {
                     Box(
@@ -216,8 +208,6 @@ fun ArtistHero(
                             modifier = Modifier.size(22.dp),
                             tint = if (isFollowed) {
                                 MaterialTheme.colorScheme.error
-                            } else if (isFluidTheme()) {
-                                MaterialTheme.colorScheme.onSurface
                             } else {
                                 MaterialTheme.colorScheme.onSecondaryContainer
                             }
@@ -227,7 +217,7 @@ fun ArtistHero(
 
                 Button(
                     onClick = onPlayClick,
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                    shape = CircleShape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -270,8 +260,8 @@ fun ArtistHero(
                 androidx.compose.material3.Surface(
                     onClick = onShuffle,
                     enabled = canShuffle,
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
-                    color = if (isFluidTheme()) MaterialTheme.colorScheme.surfaceVariant else MaterialTheme.colorScheme.secondaryContainer,
+                    shape = CircleShape,
+                    color = MaterialTheme.colorScheme.secondaryContainer,
                     modifier = Modifier.size(48.dp)
                 ) {
                     Box(
@@ -283,9 +273,9 @@ fun ArtistHero(
                             contentDescription = stringResource(R.string.shuffle),
                             modifier = Modifier.size(20.dp),
                             tint = if (canShuffle) {
-                                if (isFluidTheme()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSecondaryContainer
+                                MaterialTheme.colorScheme.onSecondaryContainer
                             } else {
-                                (if (isFluidTheme()) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onSecondaryContainer).copy(alpha = 0.38f)
+                                MaterialTheme.colorScheme.onSecondaryContainer.copy(alpha = 0.38f)
                             }
                         )
                     }

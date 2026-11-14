@@ -314,7 +314,6 @@ dependencies {
     implementation(project(":chorusmusiccanvas"))
     implementation(project(":paxsenixlyrics"))
     implementation(project(":unison"))
-    implementation(project(":hig"))
 
     implementation(libs.ktor.client.core)
     implementation(libs.retrofit)
@@ -334,6 +333,7 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.ffmpeg.kit.audio)
+
 
 }
 

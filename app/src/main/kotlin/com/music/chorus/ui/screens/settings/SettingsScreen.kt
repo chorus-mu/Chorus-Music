@@ -18,11 +18,6 @@ import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -93,8 +88,6 @@ highlightKey: String? = null) {
     val aboutText = stringResource(R.string.about)
 
     val scrollState = rememberScrollState()
-    val isFluid = isFluidTheme()
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -115,11 +108,11 @@ highlightKey: String? = null) {
             )
             Spacer(Modifier.height(8.dp))
 
-        val searchBarShape = if (isFluid) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp)
+        val searchBarShape = RoundedCornerShape(24.dp)
         Surface(
             shape = searchBarShape,
-            color = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
-            border = if (isFluid) null else androidx.compose.foundation.BorderStroke(
+            color = MaterialTheme.colorScheme.surfaceContainerHigh.copy(alpha = 0.6f),
+            border = androidx.compose.foundation.BorderStroke(
                 width = 1.dp,
                 color = MaterialTheme.colorScheme.outline.copy(alpha = 0.4f)
             ),
@@ -127,20 +120,6 @@ highlightKey: String? = null) {
                 .fillMaxWidth()
                 .padding(start = 8.dp, end = 8.dp, bottom = 16.dp)
                 .height(52.dp)
-                .let { mod ->
-                    if (isFluid) {
-                        mod
-                            .clip(searchBarShape)
-                            .fluidGlass(
-                                shape = searchBarShape,
-                                intensity = GlassIntensity.Standard,
-                                surfaceColor = if (isDark) Color(0x33202024) else Color(0x40FFFFFF),
-                                surfaceAlpha = if (isDark) 0.22f else 0.12f
-                            )
-                    } else {
-                        mod
-                    }
-                }
         ) {
             Row(
                 modifier = Modifier
@@ -393,17 +372,10 @@ highlightKey: String? = null) {
             title = {
                 Text(
                     text = stringResource(R.string.settings),
-                    style = if (isFluid) {
-                        FluidTheme.typography.title1.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 24.sp
-                        )
-                    } else {
-                        MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 22.sp
-                        )
-                    }
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 22.sp
+                    )
                 )
             },
             navigationIcon = {

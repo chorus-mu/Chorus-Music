@@ -49,13 +49,3 @@ val BottomSheetSoftAnimationSpec = spring<Dp>(
     dampingRatio = Spring.DampingRatioNoBouncy,
     stiffness = Spring.StiffnessLow
 )
-
-const val PLAYER_LAYER_HANDOFF_PROGRESS = 0.2f
-
-const val PLAYER_MINI_FADE_END = 0.3f
-
-const val PLAYER_CONTENT_APPEAR_START = 0.1f
-
-const val PLAYER_CONTENT_APPEAR_END = 0.6f
-
-const val PLAYER_GLASS_UNFREEZE_PROGRESS = 0.75f

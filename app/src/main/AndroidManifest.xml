@@ -70,11 +70,24 @@
             android:process=":crash" />
 
         <activity
+            android:name=".ui.screens.lockscreen.LockscreenActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:inheritShowWhenLocked="true"
+            android:excludeFromRecents="true"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.Chorus.Lockscreen"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode" />
+
+        <activity
             android:name=".MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:theme="@style/Theme.chorusmusic"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenSize|smallestScreenSize|screenLayout|uiMode|assetsPaths|fontScale">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>

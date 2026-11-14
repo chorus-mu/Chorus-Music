@@ -10,8 +10,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import pushkar.chorus.music.utils.listItemShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -177,7 +175,7 @@ fun AddToPlaylistDialogOnline(
                             }
                         } else null,
                         singleLine = true,
-                        shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp),
+                        shape = RoundedCornerShape(24.dp),
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = MaterialTheme.colorScheme.primary,
                             unfocusedBorderColor = MaterialTheme.colorScheme.outlineVariant,

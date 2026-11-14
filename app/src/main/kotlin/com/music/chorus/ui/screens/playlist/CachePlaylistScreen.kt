@@ -27,8 +27,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -485,7 +483,7 @@ private fun CachePlaylistHeader(
                         if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
                         else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f)
                     )
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             ) {
                 AsyncImage(
                     model = songs.firstOrNull()?.thumbnailUrl?.resize(1200, 1200),

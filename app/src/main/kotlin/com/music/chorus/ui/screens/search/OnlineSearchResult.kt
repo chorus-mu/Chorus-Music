@@ -22,10 +22,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.draw.clip
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
@@ -284,9 +280,7 @@ fun OnlineSearchResult(
             .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Top))
     ) {
 
-        val isFluid = isFluidTheme()
-        val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-        val searchShape = if (isFluid) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp)
+        val searchShape = RoundedCornerShape(24.dp)
 
         androidx.compose.material3.TextField(
             value = query,
@@ -297,7 +291,7 @@ fun OnlineSearchResult(
                 Text(
                     text = stringResource(R.string.search_yt_music),
                     style = MaterialTheme.typography.bodyLarge,
-                    color = if (isFluid && !isDark) Color(0xFF666666) else MaterialTheme.colorScheme.onSurfaceVariant
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             },
             leadingIcon = {
@@ -307,7 +301,7 @@ fun OnlineSearchResult(
                     Icon(
                         painter = painterResource(R.drawable.arrow_back),
                         contentDescription = stringResource(R.string.dismiss),
-                        tint = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurfaceVariant
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             },
@@ -321,7 +315,7 @@ fun OnlineSearchResult(
                         Icon(
                             painter = painterResource(R.drawable.close),
                             contentDescription = null,
-                            tint = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -337,16 +331,12 @@ fun OnlineSearchResult(
             singleLine = true,
             shape = searchShape,
             colors = androidx.compose.material3.TextFieldDefaults.colors(
-                focusedContainerColor = if (isFluid) {
-                    if (isDark) Color(0x332C2C2E) else Color(0x66FFFFFF)
-                } else if (pureBlack) {
+                focusedContainerColor = if (pureBlack) {
                     MaterialTheme.colorScheme.surface
                 } else {
                     MaterialTheme.colorScheme.surfaceContainerHigh
                 },
-                unfocusedContainerColor = if (isFluid) {
-                    if (isDark) Color(0x262C2C2E) else Color(0x4DFFFFFF)
-                } else if (pureBlack) {
+                unfocusedContainerColor = if (pureBlack) {
                     MaterialTheme.colorScheme.surface
                 } else {
                     MaterialTheme.colorScheme.surfaceContainerHigh
@@ -354,20 +344,12 @@ fun OnlineSearchResult(
                 focusedIndicatorColor = Color.Transparent,
                 unfocusedIndicatorColor = Color.Transparent,
                 disabledIndicatorColor = Color.Transparent,
-                focusedTextColor = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface,
-                unfocusedTextColor = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp, vertical = 8.dp)
-                .let { mod ->
-                    if (isFluid) {
-                        mod.clip(searchShape).fluidGlass(
-                            shape = searchShape,
-                            intensity = GlassIntensity.Standard,
-                        )
-                    } else mod
-                }
                 .focusRequester(focusRequester)
                 .onFocusChanged { focusState ->
                     if (focusState.isFocused) {

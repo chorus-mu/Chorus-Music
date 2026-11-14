@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -141,7 +139,7 @@ fun AmbientModeScreen(navController: NavController) {
                     modifier = Modifier
                         .fillMaxHeight(0.85f)
                         .aspectRatio(1f)
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp))
                         .pointerInput(Unit) {
                             detectTapGestures(
                                 onDoubleTap = {

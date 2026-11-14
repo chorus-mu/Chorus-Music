@@ -93,7 +93,14 @@ fun MeshGradientBackground(
     }
 
     val colorSpec: AnimationSpec<Color> = remember(reduceMotion, transitionMillis) {
-        if (reduceMotion) snap() else tween(transitionMillis, easing = SeamlessEasing)
+        if (reduceMotion) {
+            snap()
+        } else {
+            tween(
+                transitionMillis,
+                easing = androidx.compose.animation.core.CubicBezierEasing(0.37f, 0f, 0.63f, 1f),
+            )
+        }
     }
     val animatedColors = tuned.mapIndexed { index, color ->
         animateColorAsState(color, colorSpec, label = "meshColor$index")

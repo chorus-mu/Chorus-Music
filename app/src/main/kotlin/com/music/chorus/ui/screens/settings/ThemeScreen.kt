@@ -25,14 +25,10 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.BrightnessAuto
 import androidx.compose.material.icons.rounded.DarkMode
 import androidx.compose.material.icons.rounded.LightMode
-import androidx.compose.material.icons.rounded.Palette
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -68,8 +64,6 @@ import androidx.navigation.NavController
 import com.materialkolor.PaletteStyle
 import com.materialkolor.rememberDynamicColorScheme
 import pushkar.chorus.music.R
-import pushkar.chorus.music.constants.AppThemeMode
-import pushkar.chorus.music.constants.AppThemeModeKey
 import pushkar.chorus.music.constants.DarkModeKey
 import pushkar.chorus.music.constants.DynamicThemeKey
 import pushkar.chorus.music.constants.PureBlackKey
@@ -112,7 +106,6 @@ val PaletteColors = listOf(
 fun ThemeScreen(
     navController: NavController,
 highlightKey: String? = null) {
-    val (appThemeMode, onAppThemeModeChange) = rememberEnumPreference(AppThemeModeKey, defaultValue = AppThemeMode.MaterialUI)
     val (darkMode, onDarkModeChange) = rememberEnumPreference(DarkModeKey, DarkMode.AUTO)
     val (pureBlack, onPureBlackChangeRaw) = rememberPreference(PureBlackKey, defaultValue = true)
     val (_, onPureBlackMiniPlayerChange) = rememberPreference(
@@ -166,43 +159,6 @@ highlightKey: String? = null) {
             contentPadding = PaddingValues(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 120.dp),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            item {
-                Text(
-                    text = stringResource(R.string.theme_ui_style),
-                    style = MaterialTheme.typography.titleMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(bottom = 12.dp, start = 4.dp)
-                )
-
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    ThemeModeCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(R.string.theme_material_ui),
-                        icon = Icons.Rounded.Palette,
-                        isSelected = appThemeMode == AppThemeMode.MaterialUI,
-                        onClick = { onAppThemeModeChange(AppThemeMode.MaterialUI) }
-                    )
-                    ThemeModeCard(
-                        modifier = Modifier.weight(1f),
-                        title = stringResource(R.string.theme_fluid_ui),
-                        icon = Icons.Rounded.AutoAwesome,
-                        isSelected = appThemeMode == AppThemeMode.FluidUI,
-                        onClick = { onAppThemeModeChange(AppThemeMode.FluidUI) }
-                    )
-                }
-            }
-
-            item {
-                HorizontalDivider(
-                    modifier = Modifier.padding(vertical = 4.dp, horizontal = 16.dp),
-                    color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.3f)
-                )
-            }
-
             item {
                 Text(
                     text = stringResource(R.string.theme_mode),
@@ -260,7 +216,7 @@ highlightKey: String? = null) {
 
                 Card(
                     modifier = Modifier.fillMaxWidth(),
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(32.dp) else RoundedCornerShape(32.dp),
+                    shape = RoundedCornerShape(32.dp),
                     colors = CardDefaults.cardColors(
                         containerColor = MaterialTheme.colorScheme.surfaceContainerLow.copy(alpha = 0.6f)
                     ),
@@ -345,9 +301,9 @@ fun ThemeModeCard(
                 scaleX = scale
                 scaleY = scale
             }
-            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp))
+            .clip(RoundedCornerShape(24.dp))
             .background(backgroundBrush)
-            .border(borderWidth, borderColor, if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp))
+            .border(borderWidth, borderColor, RoundedCornerShape(24.dp))
             .clickable(onClick = onClick)
             .padding(vertical = 24.dp, horizontal = 12.dp),
         contentAlignment = Alignment.Center
@@ -413,8 +369,7 @@ fun PaletteItem(
         label = "scale"
     )
 
-    val isFluid = isFluidTheme()
-    val cardShape = if (isFluid) ContinuousRoundedRectangle(cornerRadius) else RoundedCornerShape(cornerRadius)
+    val cardShape = RoundedCornerShape(cornerRadius)
     val interactionSource = remember { MutableInteractionSource() }
 
     val paletteName = stringResource(palette.nameRes)

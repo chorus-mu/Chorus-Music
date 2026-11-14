@@ -24,17 +24,6 @@ val EnableDynamicIconKey = booleanPreferencesKey("enableDynamicIcon")
 val EnableHighRefreshRateKey = booleanPreferencesKey("enableHighRefreshRate")
 val EnableHapticsKey = booleanPreferencesKey("enableHaptics")
 
-enum class AppThemeMode(val label: String) {
-    MaterialUI("Material UI"),
-    FluidUI("Fluid UI");
-
-    companion object {
-        fun fromString(value: String?): AppThemeMode = entries.find { it.name == value } ?: MaterialUI
-    }
-}
-
-val AppThemeModeKey = stringPreferencesKey("app_theme_mode")
-
 val DynamicThemeKey = booleanPreferencesKey("dynamicTheme")
 val SelectedThemeColorKey = intPreferencesKey("selectedThemeColor")
 val DarkModeKey = stringPreferencesKey("darkMode")
@@ -427,6 +416,9 @@ enum class PlayerBackgroundStyle {
     GLOW_ANIMATED,
     APPLE_MUSIC,
     LIVE_MESH,
+    FLUID_MESH,
+    STATIC,
+    CUSTOM_GRADIENT,
 }
 
 enum class PlayerArtworkStyle {
@@ -436,6 +428,9 @@ enum class PlayerArtworkStyle {
 }
 
 val PlayerArtworkStyleKey = stringPreferencesKey("playerArtworkStyle")
+val PlayerLayoutOrderKey = stringPreferencesKey("playerLayoutOrder")
+val PlayerLayoutHiddenSlotsKey = stringPreferencesKey("playerLayoutHiddenSlots")
+
 val PlayerStaticColorKey = intPreferencesKey("playerStaticColor")
 val PlayerGradientStopsKey = stringPreferencesKey("playerGradientStops")
 val PlayerGradientAngleKey = floatPreferencesKey("playerGradientAngle")
@@ -508,6 +503,24 @@ val SearchSourceKey = stringPreferencesKey("searchSource")
 val SwipeThumbnailKey = booleanPreferencesKey("swipeThumbnail")
 val RotatingThumbnailKey = booleanPreferencesKey("rotatingThumbnail")
 val CanvasThumbnailAnimationKey = booleanPreferencesKey("canvasThumbnailAnimation")
+val CanvasSourceKey = stringPreferencesKey("canvasSource")
+
+enum class CanvasSource {
+    AUTO,
+    APPLE_MUSIC,
+    CHORUSMUSIC,
+    TIDAL,
+    SPOTIFY,
+}
+
+val LockscreenPlayerEnabledKey = booleanPreferencesKey("lockscreen_player_enabled")
+val LockscreenPlayerStyleKey = stringPreferencesKey("lockscreen_player_style")
+
+enum class LockscreenPlayerStyle {
+    CARD,
+    IMMERSIVE,
+}
+
 val SwipeSensitivityKey = floatPreferencesKey("swipeSensitivity")
 
 enum class SearchSource {

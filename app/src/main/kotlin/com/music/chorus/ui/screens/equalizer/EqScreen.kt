@@ -30,8 +30,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Surface
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -195,7 +193,7 @@ private fun EqScreenContent(
     onDeleteProfile: (String) -> Unit
 ) {
     Surface(
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else MaterialTheme.shapes.extraLarge,
+        shape = MaterialTheme.shapes.extraLarge,
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         tonalElevation = 6.dp,
         modifier = Modifier

@@ -29,10 +29,6 @@ import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -300,9 +296,6 @@ fun SearchScreen(
                 modifier = Modifier
                     .background(if (pureBlack) Color.Black else MaterialTheme.colorScheme.surface)
             ) {
-                val isFluid = isFluidTheme()
-                val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-
                 SearchBar(
                     inputField = {
                         BasicTextField(
@@ -324,10 +317,10 @@ fun SearchScreen(
                                 }
                             }),
                             textStyle = TextStyle(
-                                color = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface,
+                                color = MaterialTheme.colorScheme.onSurface,
                                 fontSize = 16.sp
                             ),
-                            cursorBrush = SolidColor(if (isFluid) (if (isDark) Color.White else Color(0xFF007AFF)) else MaterialTheme.colorScheme.primary),
+                            cursorBrush = SolidColor(MaterialTheme.colorScheme.primary),
                             decorationBox = { innerTextField ->
                                 Row(
                                     verticalAlignment = Alignment.CenterVertically,
@@ -346,7 +339,7 @@ fun SearchScreen(
                                         Icon(
                                             painter = painterResource(if (searchActive) R.drawable.arrow_back else R.drawable.search),
                                             contentDescription = if (searchActive) stringResource(R.string.dismiss) else null,
-                                            tint = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface
+                                            tint = MaterialTheme.colorScheme.onSurface
                                         )
                                     }
                                     Box(
@@ -363,7 +356,7 @@ fun SearchScreen(
                                                     }
                                                 ),
                                                 style = TextStyle(
-                                                    color = if (isFluid && !isDark) Color(0xFF666666) else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
                                                     fontSize = 16.sp
                                                 )
                                             )
@@ -376,7 +369,7 @@ fun SearchScreen(
                                                 Icon(
                                                     painter = painterResource(R.drawable.close),
                                                     contentDescription = null,
-                                                    tint = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface
+                                                    tint = MaterialTheme.colorScheme.onSurface
                                                 )
                                             }
                                         }
@@ -394,7 +387,7 @@ fun SearchScreen(
                                                     }
                                                 ),
                                                 contentDescription = null,
-                                                tint = if (isFluid && !isDark) Color(0xFF141416) else MaterialTheme.colorScheme.onSurface
+                                                tint = MaterialTheme.colorScheme.onSurface
                                             )
                                         }
                                     }
@@ -405,9 +398,7 @@ fun SearchScreen(
                     expanded = searchActive,
                     onExpandedChange = { searchActive = it },
                     colors = SearchBarDefaults.colors(
-                        containerColor = if (isFluid) {
-                            if (isDark) Color(0x332C2C2E) else Color(0x66FFFFFF)
-                        } else if (pureBlack) {
+                        containerColor = if (pureBlack) {
                             Color(0x22FFFFFF)
                         } else {
                             MaterialTheme.colorScheme.surfaceVariant
@@ -417,15 +408,6 @@ fun SearchScreen(
                         .fillMaxWidth()
                         .padding(horizontal = searchBarHorizontalPadding)
                         .padding(top = searchBarTopPadding)
-                        .let { mod ->
-                            if (isFluid && !searchActive) {
-                                val barShape = ContinuousRoundedRectangle(24.dp)
-                                mod.clip(barShape).fluidGlass(
-                                    shape = barShape,
-                                    intensity = GlassIntensity.Standard
-                                )
-                            } else mod
-                        }
                 ) {
                     if (showSearchContent) {
                         when (searchSource) {
@@ -483,7 +465,7 @@ fun SearchScreen(
                                         modifier = Modifier
                                             .width(32.dp)
                                             .height(3.dp)
-                                            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(topStart = 3.dp, topEnd = 3.dp) else RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
+                                            .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
                                             .background(MaterialTheme.colorScheme.primary)
                                     )
                                 }
@@ -606,45 +588,25 @@ fun ExploreTabContent(
                         val baseColor = androidx.compose.ui.graphics.Color(item.stripeColor).takeOrElse {
                             MaterialTheme.colorScheme.surfaceContainer
                         }
-                        val isFluid = isFluidTheme()
-                        val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-                        val cardShape = if (isFluid) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(8.dp)
+                        val cardShape = RoundedCornerShape(8.dp)
 
-                        val cardModifier = if (isFluid) {
-                            Modifier
-                                .weight(1f)
-                                .aspectRatio(1.5f)
-                                .clip(cardShape)
-                                .fluidGlass(
-                                    shape = cardShape,
-                                    intensity = GlassIntensity.Standard,
-                                    surfaceColor = baseColor,
-                                    surfaceAlpha = if (isDark) 0.38f else 0.22f
-                                )
-                                .clickable {
-                                    navController.navigate(
-                                        "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"
-                                    )
-                                }
-                        } else {
-                            Modifier
-                                .weight(1f)
-                                .aspectRatio(1.5f)
-                                .clip(cardShape)
-                                .background(
-                                    brush = androidx.compose.ui.graphics.Brush.linearGradient(
-                                        colors = listOf(
-                                            baseColor,
-                                            baseColor.copy(alpha = 0.5f)
-                                        )
+                        val cardModifier = Modifier
+                            .weight(1f)
+                            .aspectRatio(1.5f)
+                            .clip(cardShape)
+                            .background(
+                                brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                                    colors = listOf(
+                                        baseColor,
+                                        baseColor.copy(alpha = 0.5f)
                                     )
                                 )
-                                .clickable {
-                                    navController.navigate(
-                                        "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"
-                                    )
-                                }
-                        }
+                            )
+                            .clickable {
+                                navController.navigate(
+                                    "youtube_browse/${item.endpoint.browseId}?params=${item.endpoint.params}"
+                                )
+                            }
 
                         Box(
                             modifier = cardModifier
@@ -653,7 +615,7 @@ fun ExploreTabContent(
                                 text = item.title,
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = androidx.compose.ui.text.font.FontWeight.Bold,
-                                color = if (isFluid && !isDark) androidx.compose.ui.graphics.Color(0xFF141416) else androidx.compose.ui.graphics.Color.White,
+                                color = androidx.compose.ui.graphics.Color.White,
                                 maxLines = 2,
                                 overflow = TextOverflow.Ellipsis,
                                 modifier = Modifier
@@ -667,7 +629,7 @@ fun ExploreTabContent(
                                     .offset(x = 16.dp, y = 16.dp)
                                     .size(64.dp)
                                     .graphicsLayer { rotationZ = 25f }
-                                    .clip(if (isFluid) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(8.dp))
+                                    .clip(RoundedCornerShape(8.dp))
                                     .background(androidx.compose.ui.graphics.Color.Black.copy(alpha = 0.3f))
                             )
                         }

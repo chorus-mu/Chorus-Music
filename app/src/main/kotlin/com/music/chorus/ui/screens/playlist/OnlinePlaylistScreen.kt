@@ -55,8 +55,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -608,7 +606,7 @@ private fun OnlinePlaylistHeader(
                             if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
                             else Modifier.fillMaxWidth().aspectRatio(1f)
                         )
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(8.dp)),
+                        .clip(RoundedCornerShape(8.dp)),
                     contentScale = ContentScale.Crop
                 )
             }
@@ -646,7 +644,7 @@ private fun OnlinePlaylistHeader(
 
             if (hasExplicitContent) {
                 Surface(
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(6.dp) else RoundedCornerShape(6.dp),
+                    shape = RoundedCornerShape(6.dp),
                     color = MaterialTheme.colorScheme.surfaceVariant
                 ) {
                     Row(
@@ -673,7 +671,7 @@ private fun OnlinePlaylistHeader(
 
             val totalDuration = songs.sumOf { it.duration ?: 0 }
             Surface(
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(6.dp) else RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(6.dp),
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.padding(horizontal = 32.dp)
             ) {
@@ -746,7 +744,7 @@ private fun OnlinePlaylistHeader(
                             }
                         }
                     },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else ButtonDefaults.shape,
+                    shape = ButtonDefaults.shape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.surfaceVariant,
                         contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -789,7 +787,7 @@ private fun OnlinePlaylistHeader(
                             )
                         }
                     },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else ButtonDefaults.shape,
+                    shape = ButtonDefaults.shape,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -828,7 +826,7 @@ private fun OnlinePlaylistHeader(
                         }
                         context.startActivity(Intent.createChooser(intent, null))
                     },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                    shape = CircleShape,
                     color = MaterialTheme.colorScheme.surfaceVariant,
                     modifier = Modifier.size(48.dp)
                 ) {

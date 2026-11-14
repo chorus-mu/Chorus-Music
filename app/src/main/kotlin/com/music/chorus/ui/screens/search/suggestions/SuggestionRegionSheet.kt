@@ -12,8 +12,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Search
@@ -49,7 +47,7 @@ fun SuggestionRegionSheet(
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = bottomSheetState,
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(topStart = 28.dp, topEnd = 28.dp) else BottomSheetDefaults.ExpandedShape,
+        shape = BottomSheetDefaults.ExpandedShape,
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -86,7 +84,7 @@ fun SuggestionRegionSheet(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp))
+                    .clip(RoundedCornerShape(24.dp))
             ) {
 
                 item {
@@ -213,12 +211,7 @@ fun RegionListItem(
         modifier = Modifier
             .clip(
                 if (selected) CircleShape
-                else if (isFluidTheme()) ContinuousRoundedRectangle(
-                    topStart = top,
-                    topEnd = top,
-                    bottomStart = bottom,
-                    bottomEnd = bottom
-                ) else RoundedCornerShape(
+                else RoundedCornerShape(
                     topStart = top,
                     topEnd = top,
                     bottomStart = bottom,

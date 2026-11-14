@@ -100,26 +100,58 @@ android:gravity="center"
 
         </LinearLayout>
 
-        <!-- Minimal Progress Bar -->
-        <FrameLayout
+        <!-- Minimal Progress Bar with Timestamps -->
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="4dp"
-            android:layout_marginTop="12dp">
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="10dp">
 
-            <ImageView
-                android:id="@+id/widget_progress_track"
+            <FrameLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/widget_progress_track"
-                android:scaleType="fitXY" />
+                android:layout_height="4dp">
 
-            <ImageView
-                android:id="@+id/widget_progress_fill"
+                <ImageView
+                    android:id="@+id/widget_progress_track"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/widget_progress_track"
+                    android:scaleType="fitXY" />
+
+                <ImageView
+                    android:id="@+id/widget_progress_fill"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/widget_progress_clip"
+                    android:scaleType="fitXY" />
+            </FrameLayout>
+
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:src="@drawable/widget_progress_clip"
-                android:scaleType="fitXY" />
-        </FrameLayout>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp">
+
+                <TextView
+                    android:id="@+id/widget_time_elapsed"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:text="0:00"
+                    android:textSize="11sp"
+                    android:textColor="@color/widget_on_primary_container"
+                    android:alpha="0.75" />
+
+                <TextView
+                    android:id="@+id/widget_time_total"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:text="0:00"
+                    android:textSize="11sp"
+                    android:textColor="@color/widget_on_primary_container"
+                    android:alpha="0.75" />
+            </RelativeLayout>
+        </LinearLayout>
 
     </LinearLayout>
 </FrameLayout>

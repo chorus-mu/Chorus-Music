@@ -118,8 +118,6 @@ import pushkar.chorus.music.LocalDatabase
 import pushkar.chorus.music.LocalPlayerConnection
 import pushkar.chorus.music.R
 import pushkar.chorus.music.constants.DarkModeKey
-import pushkar.chorus.music.constants.AppThemeMode
-import pushkar.chorus.music.constants.AppThemeModeKey
 import pushkar.chorus.music.constants.LyricsAnimationStyle
 import pushkar.chorus.music.constants.LyricsAnimationStyleKey
 import pushkar.chorus.music.constants.LyricsClickKey
@@ -225,13 +223,7 @@ fun Lyrics(
     val romanizeHindiLyrics by rememberPreference(LyricsRomanizeHindiKey, true)
     val romanizePunjabiLyrics by rememberPreference(LyricsRomanizePunjabiKey, true)
     val lyricsGlowEffect by rememberPreference(LyricsGlowEffectKey, false)
-    val lyricsAnimationStylePref by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.chorusmusic_1)
-    val (themeMode) = rememberPreference(AppThemeModeKey, AppThemeMode.MaterialUI.name)
-    val lyricsAnimationStyle = if (themeMode == AppThemeMode.FluidUI.name && lyricsAnimationStylePref == LyricsAnimationStyle.chorusmusic_1) {
-        LyricsAnimationStyle.LYRICS_V2
-    } else {
-        lyricsAnimationStylePref
-    }
+    val lyricsAnimationStyle by rememberEnumPreference(LyricsAnimationStyleKey, LyricsAnimationStyle.chorusmusic_1)
     val lyricsTextSize by rememberPreference(LyricsTextSizeKey, 24f)
     val lyricsLineSpacing by rememberPreference(LyricsLineSpacingKey, 1.3f)
     val lyricsStandardBlur by rememberPreference(LyricsStandardBlurKey, false)
@@ -493,8 +485,7 @@ fun Lyrics(
 
     val expressiveAccent = when (playerBackground) {
         PlayerBackgroundStyle.DEFAULT -> MaterialTheme.colorScheme.primary
-        PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH -> {
-
+        PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH, PlayerBackgroundStyle.FLUID_MESH, PlayerBackgroundStyle.STATIC, PlayerBackgroundStyle.CUSTOM_GRADIENT -> {
             Color.White
         }
     }

@@ -24,8 +24,6 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -82,6 +80,13 @@ import pushkar.chorus.music.constants.PlayerBackgroundStyleKey
 import pushkar.chorus.music.constants.PlayerButtonsStyle
 import pushkar.chorus.music.constants.PlayerButtonsStyleKey
 
+import pushkar.chorus.music.constants.PlayerArtworkStyle
+import pushkar.chorus.music.constants.PlayerArtworkStyleKey
+import pushkar.chorus.music.constants.CanvasSource
+import pushkar.chorus.music.constants.CanvasSourceKey
+import pushkar.chorus.music.constants.LockscreenPlayerEnabledKey
+import pushkar.chorus.music.constants.LockscreenPlayerStyle
+import pushkar.chorus.music.constants.LockscreenPlayerStyleKey
 import pushkar.chorus.music.constants.RotatingThumbnailKey
 import pushkar.chorus.music.constants.SelectedThemeColorKey
 import pushkar.chorus.music.constants.ShowCachedPlaylistKey
@@ -242,6 +247,25 @@ fun AppearanceSettings(
         CanvasThumbnailAnimationKey,
         defaultValue = false
     )
+    val (canvasSource, onCanvasSourceChange) = rememberEnumPreference(
+        CanvasSourceKey,
+        defaultValue = CanvasSource.AUTO
+    )
+    var showCanvasSourceDialog by rememberSaveable { mutableStateOf(false) }
+    val (artworkStyle, onArtworkStyleChange) = rememberEnumPreference(
+        PlayerArtworkStyleKey,
+        defaultValue = PlayerArtworkStyle.CARD
+    )
+    var showArtworkStyleDialog by rememberSaveable { mutableStateOf(false) }
+    val (lockscreenPlayerEnabled, onLockscreenPlayerEnabledChange) = rememberPreference(
+        LockscreenPlayerEnabledKey,
+        defaultValue = false
+    )
+    val (lockscreenPlayerStyle, onLockscreenPlayerStyleChange) = rememberEnumPreference(
+        LockscreenPlayerStyleKey,
+        defaultValue = LockscreenPlayerStyle.CARD
+    )
+    var showLockscreenPlayerStyleDialog by rememberSaveable { mutableStateOf(false) }
     val (rotatingThumbnail, onRotatingThumbnailChange) = rememberPreference(
         RotatingThumbnailKey,
         defaultValue = false
@@ -562,6 +586,9 @@ fun AppearanceSettings(
                     PlayerBackgroundStyle.GLOW_ANIMATED -> stringResource(R.string.glow_animated)
                     PlayerBackgroundStyle.APPLE_MUSIC -> stringResource(R.string.apple_music)
                     PlayerBackgroundStyle.LIVE_MESH -> stringResource(R.string.live_mesh)
+                    PlayerBackgroundStyle.FLUID_MESH -> "Fluid Mesh"
+                    PlayerBackgroundStyle.STATIC -> "Static Color"
+                    PlayerBackgroundStyle.CUSTOM_GRADIENT -> "Custom Gradient"
                 }
             }
         )
@@ -585,6 +612,67 @@ fun AppearanceSettings(
                     PlayerBackgroundStyle.GLOW_ANIMATED -> stringResource(R.string.glow_animated)
                     PlayerBackgroundStyle.LIVE_MESH -> stringResource(R.string.live_mesh)
                     else -> stringResource(R.string.unknown)
+                }
+            }
+        )
+    }
+
+    if (showArtworkStyleDialog) {
+        EnumDialog(
+            onDismiss = { showArtworkStyleDialog = false },
+            onSelect = {
+                onArtworkStyleChange(it)
+                showArtworkStyleDialog = false
+            },
+            title = stringResource(R.string.player_artwork_style),
+            current = artworkStyle,
+            values = PlayerArtworkStyle.entries,
+            valueText = {
+                when (it) {
+                    PlayerArtworkStyle.CARD -> stringResource(R.string.player_artwork_style_card)
+                    PlayerArtworkStyle.VINYL -> stringResource(R.string.player_artwork_style_vinyl)
+                    PlayerArtworkStyle.CLOVER -> stringResource(R.string.player_artwork_style_clover)
+                }
+            }
+        )
+    }
+
+    if (showCanvasSourceDialog) {
+        EnumDialog(
+            onDismiss = { showCanvasSourceDialog = false },
+            onSelect = {
+                onCanvasSourceChange(it)
+                showCanvasSourceDialog = false
+            },
+            title = stringResource(R.string.canvas_source),
+            current = canvasSource,
+            values = CanvasSource.entries,
+            valueText = {
+                when (it) {
+                    CanvasSource.AUTO -> stringResource(R.string.canvas_source_auto)
+                    CanvasSource.APPLE_MUSIC -> stringResource(R.string.canvas_source_apple)
+                    CanvasSource.CHORUSMUSIC -> stringResource(R.string.canvas_source_chorus)
+                    CanvasSource.TIDAL -> stringResource(R.string.canvas_source_tidal)
+                    CanvasSource.SPOTIFY -> stringResource(R.string.canvas_source_spotify)
+                }
+            }
+        )
+    }
+
+    if (showLockscreenPlayerStyleDialog) {
+        EnumDialog(
+            onDismiss = { showLockscreenPlayerStyleDialog = false },
+            onSelect = {
+                onLockscreenPlayerStyleChange(it)
+                showLockscreenPlayerStyleDialog = false
+            },
+            title = "Lock screen player style",
+            current = lockscreenPlayerStyle,
+            values = LockscreenPlayerStyle.entries,
+            valueText = {
+                when (it) {
+                    LockscreenPlayerStyle.CARD -> "Card"
+                    LockscreenPlayerStyle.IMMERSIVE -> "Immersive"
                 }
             }
         )
@@ -759,7 +847,7 @@ fun AppearanceSettings(
                 isSystemInDarkTheme()
             )
 
-            val optionShape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp)
+            val optionShape = RoundedCornerShape(16.dp)
 
             Column(
                 verticalArrangement = Arrangement.spacedBy(12.dp)
@@ -1072,6 +1160,9 @@ fun AppearanceSettings(
                                 PlayerBackgroundStyle.GLOW_ANIMATED -> stringResource(R.string.glow_animated)
                                 PlayerBackgroundStyle.APPLE_MUSIC -> stringResource(R.string.apple_music)
                                 PlayerBackgroundStyle.LIVE_MESH -> stringResource(R.string.live_mesh)
+                                PlayerBackgroundStyle.FLUID_MESH -> "Fluid Mesh"
+                                PlayerBackgroundStyle.STATIC -> "Static Color"
+                                PlayerBackgroundStyle.CUSTOM_GRADIENT -> "Custom Gradient"
                             }
                         )
                     },
@@ -1214,27 +1305,37 @@ fun AppearanceSettings(
                     onClick = { onCanvasThumbnailAnimationChange(!canvasThumbnailAnimation) }
                 ),
                 Material3SettingsItem(
-                    isHighlighted = (highlightKey == stringResource(R.string.rotating_thumbnail)),
+                    isHighlighted = (highlightKey == stringResource(R.string.player_artwork_style)),
                     icon = painterResource(R.drawable.image),
-                    title = { Text(stringResource(R.string.rotating_thumbnail)) },
-                    description = { Text(stringResource(R.string.rotating_thumbnail_desc)) },
-                    trailingContent = {
-                        Switch(
-                            checked = rotatingThumbnail,
-                            onCheckedChange = onRotatingThumbnailChange,
-                            thumbContent = {
-                                Icon(
-                                    painter = painterResource(
-                                        id = if (rotatingThumbnail) R.drawable.check else R.drawable.close
-                                    ),
-                                    contentDescription = null,
-                                    modifier = Modifier.size(SwitchDefaults.IconSize)
-                                )
+                    title = { Text(stringResource(R.string.player_artwork_style)) },
+                    description = {
+                        Text(
+                            when (artworkStyle) {
+                                PlayerArtworkStyle.CARD -> stringResource(R.string.player_artwork_style_card)
+                                PlayerArtworkStyle.VINYL -> stringResource(R.string.player_artwork_style_vinyl)
+                                PlayerArtworkStyle.CLOVER -> stringResource(R.string.player_artwork_style_clover)
                             }
                         )
                     },
-                    onClick = { onRotatingThumbnailChange(!rotatingThumbnail) }
+                    onClick = { showArtworkStyleDialog = true }
                 ),
+                if (canvasThumbnailAnimation) Material3SettingsItem(
+                    isHighlighted = (highlightKey == stringResource(R.string.canvas_source)),
+                    icon = painterResource(R.drawable.palette),
+                    title = { Text(stringResource(R.string.canvas_source)) },
+                    description = {
+                        Text(
+                            when (canvasSource) {
+                                CanvasSource.AUTO -> stringResource(R.string.canvas_source_auto)
+                                CanvasSource.APPLE_MUSIC -> stringResource(R.string.canvas_source_apple)
+                                CanvasSource.CHORUSMUSIC -> stringResource(R.string.canvas_source_chorus)
+                                CanvasSource.TIDAL -> stringResource(R.string.canvas_source_tidal)
+                                CanvasSource.SPOTIFY -> stringResource(R.string.canvas_source_spotify)
+                            }
+                        )
+                    },
+                    onClick = { showCanvasSourceDialog = true }
+                ) else null,
                 Material3SettingsItem(
                     isHighlighted = (highlightKey == stringResource(R.string.show_comment_button)),
                     icon = painterResource(R.drawable.chat_msg),
@@ -1278,6 +1379,42 @@ fun AppearanceSettings(
                         )
                     },
                 ),
+                Material3SettingsItem(
+                    isHighlighted = (highlightKey == "Lock screen player"),
+                    icon = painterResource(R.drawable.lock),
+                    title = { Text("Lock screen player") },
+                    description = { Text("Show Chorus player over the lock screen during playback") },
+                    trailingContent = {
+                        Switch(
+                            checked = lockscreenPlayerEnabled,
+                            onCheckedChange = onLockscreenPlayerEnabledChange,
+                            thumbContent = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (lockscreenPlayerEnabled) R.drawable.check else R.drawable.close
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(SwitchDefaults.IconSize)
+                                )
+                            }
+                        )
+                    },
+                    onClick = { onLockscreenPlayerEnabledChange(!lockscreenPlayerEnabled) }
+                ),
+                if (lockscreenPlayerEnabled) Material3SettingsItem(
+                    isHighlighted = (highlightKey == "Lock screen player style"),
+                    icon = painterResource(R.drawable.palette),
+                    title = { Text("Lock screen player style") },
+                    description = {
+                        Text(
+                            when (lockscreenPlayerStyle) {
+                                LockscreenPlayerStyle.CARD -> "Card"
+                                LockscreenPlayerStyle.IMMERSIVE -> "Immersive"
+                            }
+                        )
+                    },
+                    onClick = { showLockscreenPlayerStyleDialog = true }
+                ) else null,
                 if (swipeThumbnail) Material3SettingsItem(
                     isHighlighted = (highlightKey == stringResource(R.string.swipe_sensitivity)),
                     icon = painterResource(R.drawable.tune),

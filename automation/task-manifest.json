@@ -6,7 +6,7 @@
     {
       "name": "ThemeEngineVerification",
       "priority": "HIGH",
-      "targetEngines": ["MaterialUI", "FluidUI"],
+      "targetEngines": ["MaterialUI"],
       "enabled": true
     },
     {

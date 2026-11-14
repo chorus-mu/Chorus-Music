@@ -34,8 +34,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pushkar.chorus.music.R
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
 import pushkar.chorus.music.ui.utils.backToMain
 
 @Composable
@@ -105,43 +103,30 @@ fun TopBarIconButton(
     colors: IconButtonColors? = null,
     content: @Composable () -> Unit,
 ) {
-    val isFluid = pushkar.chorus.music.ui.theme.isFluidTheme()
+    val defaultColors = colors ?: IconButtonDefaults.filledTonalIconButtonColors(
+        containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+        contentColor = MaterialTheme.colorScheme.onSurface,
+    )
 
-    if (isFluid) {
-        GlassCircleButton(
-            onClick = onClick,
-            modifier = modifier,
-            onLongClick = onLongClick,
-            enabled = enabled,
-            size = 42.dp,
-            content = content
-        )
-    } else {
-        val defaultColors = colors ?: IconButtonDefaults.filledTonalIconButtonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-            contentColor = MaterialTheme.colorScheme.onSurface,
-        )
-
-        Box(
-            modifier = modifier
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(color = defaultColors.containerColor)
-                .combinedClickable(
-                    onClick = onClick,
-                    onLongClick = onLongClick,
-                    enabled = enabled,
-                    role = Role.Button,
-                    interactionSource = remember { MutableInteractionSource() },
-                    indication = ripple(
-                        bounded = false,
-                        radius = 22.dp
-                    ),
+    Box(
+        modifier = modifier
+            .size(44.dp)
+            .clip(CircleShape)
+            .background(color = defaultColors.containerColor)
+            .combinedClickable(
+                onClick = onClick,
+                onLongClick = onLongClick,
+                enabled = enabled,
+                role = Role.Button,
+                interactionSource = remember { MutableInteractionSource() },
+                indication = ripple(
+                    bounded = false,
+                    radius = 22.dp
                 ),
-            contentAlignment = Alignment.Center,
-        ) {
-            CompositionLocalProvider(LocalContentColor provides defaultColors.contentColor, content = content)
-        }
+            ),
+        contentAlignment = Alignment.Center,
+    ) {
+        CompositionLocalProvider(LocalContentColor provides defaultColors.contentColor, content = content)
     }
 }
 

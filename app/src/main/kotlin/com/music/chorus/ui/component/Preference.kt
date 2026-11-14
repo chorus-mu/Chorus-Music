@@ -39,11 +39,6 @@ import androidx.compose.ui.unit.dp
 import pushkar.chorus.music.R
 import kotlin.math.roundToInt
 
-import androidx.compose.ui.graphics.Color
-import pushkar.chorus.music.ui.fluid.foundation.BounceIndication
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-import pushkar.chorus.music.ui.theme.isFluidTheme
-
 @Composable
 fun PreferenceEntry(
     modifier: Modifier = Modifier,
@@ -55,9 +50,6 @@ fun PreferenceEntry(
     onClick: (() -> Unit)? = null,
     isEnabled: Boolean = true,
 ) {
-    val isFluid = isFluidTheme()
-    val interactionSource = remember { androidx.compose.foundation.interaction.MutableInteractionSource() }
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier =
@@ -65,15 +57,7 @@ fun PreferenceEntry(
                 .fillMaxWidth()
                 .let { mod ->
                     if (isEnabled && onClick != null) {
-                        if (isFluid) {
-                            mod.clickable(
-                                interactionSource = interactionSource,
-                                indication = BounceIndication,
-                                onClick = onClick
-                            )
-                        } else {
-                            mod.clickable(onClick = onClick)
-                        }
+                        mod.clickable(onClick = onClick)
                     } else mod
                 }
                 .alpha(if (isEnabled) 1f else 0.5f)
@@ -202,44 +186,26 @@ fun SwitchPreference(
     onCheckedChange: (Boolean) -> Unit,
     isEnabled: Boolean = true,
 ) {
-    val isFluid = isFluidTheme()
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-
     PreferenceEntry(
         modifier = modifier,
         title = title,
         description = description,
         icon = icon,
         trailingContent = {
-            if (isFluid) {
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange,
-                    enabled = isEnabled,
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = Color.White,
-                        checkedTrackColor = FluidTheme.tint,
-                        uncheckedThumbColor = Color.White,
-                        uncheckedTrackColor = if (isDark) Color(0xFF39393D) else Color(0xFFE9E9EA),
-                        uncheckedBorderColor = Color.Transparent
+            Switch(
+                checked = checked,
+                onCheckedChange = onCheckedChange,
+                enabled = isEnabled,
+                thumbContent = {
+                    Icon(
+                        painter = painterResource(
+                            id = if (checked) R.drawable.check else R.drawable.close
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(SwitchDefaults.IconSize),
                     )
-                )
-            } else {
-                Switch(
-                    checked = checked,
-                    onCheckedChange = onCheckedChange,
-                    enabled = isEnabled,
-                    thumbContent = {
-                        Icon(
-                            painter = painterResource(
-                                id = if (checked) R.drawable.check else R.drawable.close
-                            ),
-                            contentDescription = null,
-                            modifier = Modifier.size(SwitchDefaults.IconSize),
-                        )
-                    }
-                )
-            }
+                }
+            )
         },
         onClick = { onCheckedChange(!checked) },
         isEnabled = isEnabled

@@ -47,8 +47,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -477,7 +475,7 @@ private fun LocalSongBadge(
     text: String,
 ) {
     Surface(
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(20.dp) else RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHighest.copy(alpha = 0.92f),
     ) {
         Row(
@@ -546,7 +544,7 @@ private fun LocalSongEmptyState(
     query: String,
 ) {
     Surface(
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(28.dp),
         color = MaterialTheme.colorScheme.surfaceContainerLow,
         modifier = Modifier
             .fillMaxWidth()
@@ -662,7 +660,7 @@ private fun LocalSongScanSheet(
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(topStart = 36.dp, topEnd = 36.dp) else RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
+        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
         tonalElevation = 2.dp,
     ) {
         Column(
@@ -674,7 +672,7 @@ private fun LocalSongScanSheet(
                 .padding(bottom = 28.dp),
         ) {
             Surface(
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(32.dp) else RoundedCornerShape(32.dp),
+                shape = RoundedCornerShape(32.dp),
                 color = heroContainerColor,
                 modifier = Modifier.size(80.dp),
             ) {
@@ -723,7 +721,7 @@ private fun LocalSongScanSheet(
                 exit = shrinkVertically(spring(stiffness = Spring.StiffnessLow)) + fadeOut(),
             ) {
                 Surface(
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp),
+                    shape = RoundedCornerShape(24.dp),
                     color = MaterialTheme.colorScheme.primaryContainer,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -750,7 +748,7 @@ private fun LocalSongScanSheet(
             }
 
             Surface(
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -763,7 +761,7 @@ private fun LocalSongScanSheet(
                         description = stringResource(R.string.permission_storage_desc),
                         trailing = {
                             Surface(
-                                shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+                                shape = RoundedCornerShape(16.dp),
                                 color = if (hasStoragePermission) {
                                     MaterialTheme.colorScheme.primaryContainer
                                 } else {
@@ -823,7 +821,7 @@ private fun LocalSongScanSheet(
             Spacer(modifier = Modifier.height(16.dp))
 
             Surface(
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(28.dp),
                 color = MaterialTheme.colorScheme.surfaceContainer,
                 modifier = Modifier
                     .fillMaxWidth()
@@ -927,7 +925,7 @@ private fun LocalSongScanSheet(
                     disabledContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
                     disabledContentColor = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f),
                 ),
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+                shape = RoundedCornerShape(28.dp),
                 contentPadding = PaddingValues(horizontal = 24.dp, vertical = 16.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
@@ -978,7 +976,7 @@ private fun LocalSongScanSheet(
                 exit = shrinkVertically(spring(stiffness = Spring.StiffnessLow)) + fadeOut(),
             ) {
                 Surface(
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(20.dp) else RoundedCornerShape(20.dp),
+                    shape = RoundedCornerShape(20.dp),
                     color = MaterialTheme.colorScheme.errorContainer,
                     modifier = Modifier
                         .fillMaxWidth()
@@ -1018,7 +1016,7 @@ private fun LocalSongScanSettingCard(
     content: @Composable ColumnScope.() -> Unit,
 ) {
     Surface(
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp),
+        shape = RoundedCornerShape(24.dp),
         color = MaterialTheme.colorScheme.surfaceContainerHigh,
         modifier = Modifier.fillMaxWidth(),
     ) {
@@ -1032,7 +1030,7 @@ private fun LocalSongScanSettingCard(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 Surface(
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(18.dp) else RoundedCornerShape(18.dp),
+                    shape = RoundedCornerShape(18.dp),
                     color = MaterialTheme.colorScheme.surfaceContainerHighest,
                     modifier = Modifier.size(44.dp),
                 ) {
@@ -1063,7 +1061,7 @@ private fun LocalSongScanSettingCard(
 
                     if (actionLabel != null && onActionClick != null) {
                         Surface(
-                            shape = if (isFluidTheme()) ContinuousRoundedRectangle(18.dp) else RoundedCornerShape(18.dp),
+                            shape = RoundedCornerShape(18.dp),
                             color = MaterialTheme.colorScheme.secondaryContainer,
                             modifier = Modifier.padding(top = 8.dp),
                         ) {
@@ -1104,7 +1102,7 @@ private fun LocalSongFolderChip(
     onRemove: () -> Unit,
 ) {
     Surface(
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(20.dp) else RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.65f),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
     ) {
@@ -1125,7 +1123,7 @@ private fun LocalSongFolderChip(
                 color = MaterialTheme.colorScheme.onSecondaryContainer,
             )
             Surface(
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(12.dp),
                 color = MaterialTheme.colorScheme.surface.copy(alpha = 0.55f),
                 modifier = Modifier.alpha(if (enabled) 1f else 0.5f),
             ) {
@@ -1162,7 +1160,7 @@ private fun ScanSheetInfoRow(
             .padding(horizontal = 20.dp, vertical = 16.dp),
     ) {
         Surface(
-            shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(16.dp),
             color = MaterialTheme.colorScheme.surfaceContainerHighest,
             modifier = Modifier.size(44.dp),
         ) {

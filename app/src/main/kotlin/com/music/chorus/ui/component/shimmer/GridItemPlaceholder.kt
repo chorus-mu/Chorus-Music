@@ -21,8 +21,6 @@ import pushkar.chorus.music.constants.GridItemsSizeKey
 import pushkar.chorus.music.constants.GridThumbnailHeight
 import pushkar.chorus.music.constants.SmallGridThumbnailHeight
 import pushkar.chorus.music.constants.ThumbnailCornerRadius
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import pushkar.chorus.music.utils.rememberEnumPreference
 
 @Composable
@@ -33,11 +31,6 @@ fun GridItemPlaceHolder(
 ) {
     val gridItemSize by rememberEnumPreference(GridItemsSizeKey, GridItemSize.BIG)
     val gridHeight = if (gridItemSize == GridItemSize.BIG) GridThumbnailHeight else SmallGridThumbnailHeight
-    val effectiveShape = if (isFluidTheme() && thumbnailShape is RoundedCornerShape) {
-        ContinuousRoundedRectangle(ThumbnailCornerRadius)
-    } else {
-        thumbnailShape
-    }
 
     Column(
         modifier =
@@ -58,7 +51,7 @@ fun GridItemPlaceHolder(
             } else {
                 Modifier.height(gridHeight)
             }.aspectRatio(1f)
-                .clip(effectiveShape)
+                .clip(thumbnailShape)
                 .background(MaterialTheme.colorScheme.onSurface),
         )
 

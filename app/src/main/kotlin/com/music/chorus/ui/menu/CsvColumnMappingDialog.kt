@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
@@ -61,7 +59,7 @@ fun CsvColumnMappingDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.95f)
-                .clip(if (isFluidTheme()) ContinuousRoundedRectangle(26.dp) else RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -76,7 +74,7 @@ fun CsvColumnMappingDialog(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),
@@ -282,7 +280,7 @@ fun CsvImportProgressDialog(
         Column(
             modifier = Modifier
                 .fillMaxWidth(0.85f)
-                .clip(if (isFluidTheme()) ContinuousRoundedRectangle(26.dp) else RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(24.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
@@ -311,7 +309,7 @@ fun CsvImportProgressDialog(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(8.dp))
+                        .clip(RoundedCornerShape(8.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant)
                         .padding(12.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp),

@@ -25,12 +25,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.draw.clip
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material3.DropdownMenu
@@ -83,8 +77,6 @@ fun <E> ChipsRow(
         chips.forEach { (value, label) ->
             val isSelected = currentValue == value
 
-            val isFluid = isFluidTheme()
-            val isDark = isSystemInDarkTheme()
             val cornerRadius by animateDpAsState(
                 targetValue = if (isSelected) 20.dp else 8.dp,
                 animationSpec = spring(
@@ -93,30 +85,19 @@ fun <E> ChipsRow(
                 ),
                 label = "corner_radius"
             )
-            val chipShape = if (isFluid) ContinuousRoundedRectangle(cornerRadius) else RoundedCornerShape(cornerRadius)
+            val chipShape = RoundedCornerShape(cornerRadius)
 
             FilterChip(
                 label = {
                     Text(
                         text = label,
-                        fontWeight = if (isFluid && isSelected) androidx.compose.ui.text.font.FontWeight.SemiBold else androidx.compose.ui.text.font.FontWeight.Normal
+                        fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
                     )
                 },
                 selected = isSelected,
-                colors = if (isFluid) {
-                    FilterChipDefaults.filterChipColors(
-                        containerColor = Color.Transparent,
-                        selectedContainerColor = Color.Transparent,
-                        labelColor = if (isDark) Color(0xFFEEEEEE) else Color(0xFF141416),
-                        selectedLabelColor = MaterialTheme.colorScheme.primary,
-                        iconColor = if (isDark) Color(0xFFEEEEEE) else Color(0xFF141416),
-                        selectedLeadingIconColor = MaterialTheme.colorScheme.primary
-                    )
-                } else {
-                    FilterChipDefaults.filterChipColors(
-                        containerColor = containerColor,
-                    )
-                },
+                colors = FilterChipDefaults.filterChipColors(
+                    containerColor = containerColor,
+                ),
                 onClick = { onValueUpdate(value) },
                 leadingIcon = if (isSelected) {
                     {
@@ -138,16 +119,6 @@ fun <E> ChipsRow(
                             stiffness = Spring.StiffnessMedium
                         )
                     )
-                    .let { mod ->
-                        if (isFluid) {
-                            mod.clip(chipShape).fluidGlass(
-                                shape = chipShape,
-                                intensity = if (isSelected) GlassIntensity.Prominent else GlassIntensity.Subtle,
-                                surfaceColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                                surfaceAlpha = if (isSelected) (if (isDark) 0.32f else 0.20f) else (if (isDark) 0.14f else 0.08f)
-                            )
-                        } else mod
-                    }
             )
 
             Spacer(Modifier.width(8.dp))
@@ -183,25 +154,12 @@ fun <Int> ChoiceChipsRow(
                 .horizontalScroll(rememberScrollState())
                 .windowInsetsPadding(WindowInsets.systemBars.only(WindowInsetsSides.Horizontal)),
         ) {
-            val isFluid = isFluidTheme()
-            val isDark = isSystemInDarkTheme()
             Spacer(Modifier.width(12.dp))
             Box(contentAlignment = Alignment.Center) {
-                val optionChipShape = if (isFluid) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp)
+                val optionChipShape = RoundedCornerShape(16.dp)
                 FilterChip(
                     selected = false,
-                    modifier = Modifier
-                        .padding(horizontal = 4.dp)
-                        .let { mod ->
-                            if (isFluid) {
-                                mod.clip(optionChipShape).fluidGlass(
-                                    shape = optionChipShape,
-                                    intensity = GlassIntensity.Standard,
-                                    surfaceColor = MaterialTheme.colorScheme.primary,
-                                    surfaceAlpha = if (isDark) 0.22f else 0.12f
-                                )
-                            } else mod
-                        },
+                    modifier = Modifier.padding(horizontal = 4.dp),
                     onClick = {
                         menuExpanded = !menuExpanded
                         expandIconDegree -= 180
@@ -214,7 +172,7 @@ fun <Int> ChoiceChipsRow(
                                 OptionStats.YEARS -> stringResource(id = R.string.years)
                                 OptionStats.CONTINUOUS -> stringResource(id = R.string.continuous)
                             },
-                            fontWeight = if (isFluid) androidx.compose.ui.text.font.FontWeight.Medium else androidx.compose.ui.text.font.FontWeight.Normal
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
                         )
                     },
                     leadingIcon = {
@@ -222,7 +180,7 @@ fun <Int> ChoiceChipsRow(
                             imageVector = Icons.Filled.Tune,
                             contentDescription = null,
                             modifier = Modifier.size(FilterChipDefaults.IconSize),
-                            tint = if (isFluid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     trailingIcon = {
@@ -231,26 +189,17 @@ fun <Int> ChoiceChipsRow(
                             contentDescription = null,
                             modifier = Modifier
                                 .graphicsLayer(rotationZ = rotationAnimation),
-                            tint = if (isFluid) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     },
                     shape = optionChipShape,
                     border = null,
-                    colors = if (isFluid) {
-                        FilterChipDefaults.filterChipColors(
-                            containerColor = Color.Transparent,
-                            selectedContainerColor = Color.Transparent,
-                            labelColor = if (isDark) Color(0xFFEEEEEE) else Color(0xFF141416),
-                            selectedLabelColor = MaterialTheme.colorScheme.primary
-                        )
-                    } else {
-                        FilterChipDefaults.filterChipColors(
-                            containerColor = containerColor,
-                            selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
-                            labelColor = MaterialTheme.colorScheme.onSurface,
-                            selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    }
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = containerColor,
+                        selectedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+                        labelColor = MaterialTheme.colorScheme.onSurface,
+                        selectedLabelColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
                 )
 
                 DropdownMenu(
@@ -259,9 +208,8 @@ fun <Int> ChoiceChipsRow(
                         menuExpanded = false
                         expandIconDegree += 180
                     },
-                    shape = if (isFluid) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
-                    containerColor = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh,
-                    modifier = if (isFluid) Modifier.fluidGlass(shape = ContinuousRoundedRectangle(16.dp), intensity = GlassIntensity.Prominent) else Modifier
+                    shape = RoundedCornerShape(16.dp),
+                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                 ) {
                     options.forEach { option ->
                         DropdownMenuItem(
@@ -296,30 +244,19 @@ fun <Int> ChoiceChipsRow(
                     ),
                     label = "corner_radius"
                 )
-                val chipShape = if (isFluid) ContinuousRoundedRectangle(cornerRadius) else RoundedCornerShape(cornerRadius)
+                val chipShape = RoundedCornerShape(cornerRadius)
 
                 FilterChip(
                     label = {
                         Text(
                             text = label,
-                            fontWeight = if (isFluid && isSelected) androidx.compose.ui.text.font.FontWeight.SemiBold else androidx.compose.ui.text.font.FontWeight.Normal
+                            fontWeight = androidx.compose.ui.text.font.FontWeight.Normal
                         )
                     },
                     selected = isSelected,
-                    colors = if (isFluid) {
-                        FilterChipDefaults.filterChipColors(
-                            containerColor = Color.Transparent,
-                            selectedContainerColor = Color.Transparent,
-                            labelColor = if (isDark) Color(0xFFEEEEEE) else Color(0xFF141416),
-                            selectedLabelColor = MaterialTheme.colorScheme.primary,
-                            iconColor = if (isDark) Color(0xFFEEEEEE) else Color(0xFF141416),
-                            selectedLeadingIconColor = MaterialTheme.colorScheme.primary
-                        )
-                    } else {
-                        FilterChipDefaults.filterChipColors(
-                            containerColor = containerColor,
-                        )
-                    },
+                    colors = FilterChipDefaults.filterChipColors(
+                        containerColor = containerColor,
+                    ),
                     onClick = { onValueUpdate(value) },
                     leadingIcon = if (isSelected) {
                         {
@@ -342,16 +279,6 @@ fun <Int> ChoiceChipsRow(
                                 stiffness = Spring.StiffnessMedium
                             )
                         )
-                        .let { mod ->
-                            if (isFluid) {
-                                mod.clip(chipShape).fluidGlass(
-                                    shape = chipShape,
-                                    intensity = if (isSelected) GlassIntensity.Prominent else GlassIntensity.Subtle,
-                                    surfaceColor = if (isSelected) MaterialTheme.colorScheme.primary else Color.Unspecified,
-                                    surfaceAlpha = if (isSelected) (if (isDark) 0.32f else 0.20f) else (if (isDark) 0.14f else 0.08f)
-                                )
-                            } else mod
-                        }
                 )
             }
         }

@@ -67,18 +67,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
-import pushkar.chorus.music.ui.component.GlassCircleButton
-import pushkar.chorus.music.ui.component.GlassCircleShape
-import pushkar.chorus.music.ui.component.backdrop.backdrops.layerBackdrop
-import pushkar.chorus.music.ui.component.backdrop.backdrops.rememberLayerBackdrop
-import pushkar.chorus.music.ui.fluid.foundation.LocalAppBackdrop
-import pushkar.chorus.music.ui.fluid.foundation.LocalPooledGlass
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.fluid.foundation.BounceIndication
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ContainedLoadingIndicator
@@ -193,11 +181,14 @@ import pushkar.chorus.music.chorusmusic.getConnectedBluetoothDeviceName
 import pushkar.chorus.music.chorusmusic.isBuds
 import pushkar.chorus.music.chorusmusic.isSpeaker
 import pushkar.chorus.music.chorusmusic.AudioDeviceBottomSheet
+import android.graphics.Bitmap
+import pushkar.chorus.music.constants.PlayerStaticColorKey
+import pushkar.chorus.music.constants.PlayerGradientStopsKey
+import pushkar.chorus.music.constants.PlayerGradientAngleKey
+import pushkar.chorus.music.ui.theme.decodeGradientStops
+import pushkar.chorus.music.ui.theme.tiltedGradient
 import pushkar.chorus.music.ui.component.BottomSheet
 import pushkar.chorus.music.ui.component.BottomSheetState
-import pushkar.chorus.music.ui.theme.isFluidTheme
-import pushkar.chorus.music.ui.player.PlayerMorphHostEffects
-import pushkar.chorus.music.ui.player.PlayerMorphHost
 import pushkar.chorus.music.ui.player.MeshGradientBackground
 import pushkar.chorus.music.ui.player.rememberArtworkMeshPalette
 import pushkar.chorus.music.ui.component.CastButton
@@ -316,6 +307,12 @@ fun BottomSheetPlayer(
     val (hidePlayerThumbnail, onHidePlayerThumbnailChange) = rememberPreference(HidePlayerThumbnailKey, false)
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, true)
     val mediaMetadata by playerConnection.mediaMetadata.collectAsState()
+    val trackChoreography = rememberTrackChoreography(mediaMetadata)
+    val textMetadata = trackChoreography.text.value ?: mediaMetadata
+    val artworkMetadata = trackChoreography.artwork.value ?: mediaMetadata
+    val detailMetadata = trackChoreography.detail.value ?: mediaMetadata
+    val ambientMetadata = trackChoreography.ambient.value ?: mediaMetadata
+
     val isLocalMedia = mediaMetadata?.id?.isLocalMediaId() == true
 
     val playerBackgroundPref by rememberEnumPreference(
@@ -323,6 +320,12 @@ fun BottomSheetPlayer(
         defaultValue = PlayerBackgroundStyle.GRADIENT
     )
     val playerBackground = if (isLocalMedia) PlayerBackgroundStyle.DEFAULT else playerBackgroundPref
+    val staticColor by rememberPreference(PlayerStaticColorKey, defaultValue = 0xFF1A1A1A.toInt())
+    val gradientStopsRaw by rememberPreference(PlayerGradientStopsKey, defaultValue = "")
+    val gradientStops = remember(gradientStopsRaw) { decodeGradientStops(gradientStopsRaw) }
+    val gradientAngle by rememberPreference(PlayerGradientAngleKey, defaultValue = 90f)
+    var liveCanvasFrame by remember { mutableStateOf<Bitmap?>(null) }
+
     val playerButtonsStyle by rememberEnumPreference(
         key = PlayerButtonsStyleKey,
         defaultValue = PlayerButtonsStyle.DEFAULT
@@ -343,7 +346,9 @@ fun BottomSheetPlayer(
 
     val shouldUseDarkButtonColors = remember(playerBackground, useDarkTheme) {
         when (playerBackground) {
-            PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED, PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH -> true
+            PlayerBackgroundStyle.BLUR, PlayerBackgroundStyle.GRADIENT, PlayerBackgroundStyle.GLOW_ANIMATED,
+            PlayerBackgroundStyle.APPLE_MUSIC, PlayerBackgroundStyle.LIVE_MESH, PlayerBackgroundStyle.FLUID_MESH,
+            PlayerBackgroundStyle.STATIC, PlayerBackgroundStyle.CUSTOM_GRADIENT -> true
             PlayerBackgroundStyle.DEFAULT -> useDarkTheme
         }
     }
@@ -725,14 +730,7 @@ fun BottomSheetPlayer(
         }
     }
 
-    val isFluid = isFluidTheme()
     val (textButtonColor, iconButtonColor) = when {
-        isFluid -> {
-            Pair(
-                if (useDarkTheme) Color.White.copy(alpha = 0.20f) else Color.White.copy(alpha = 0.70f),
-                if (useDarkTheme) Color.White else Color(0xFF1C1C1E)
-            )
-        }
         isLocalMedia ||
                 playerBackground == PlayerBackgroundStyle.BLUR ||
                 playerBackground == PlayerBackgroundStyle.GRADIENT ||
@@ -772,27 +770,21 @@ fun BottomSheetPlayer(
         }
     }
 
-    val (sideButtonContainerColor, sideButtonContentColor) = when {
-        isFluid -> Pair(
-            if (useDarkTheme) Color.White.copy(alpha = 0.16f) else Color.White.copy(alpha = 0.65f),
-            if (useDarkTheme) Color.White else Color(0xFF1C1C1E)
+    val (sideButtonContainerColor, sideButtonContentColor) = when (playerButtonsStyle) {
+        PlayerButtonsStyle.DEFAULT -> Pair(
+            Color.White.copy(alpha = 0.2f),
+            Color.White
         )
-        else -> when (playerButtonsStyle) {
-            PlayerButtonsStyle.DEFAULT -> Pair(
-                Color.White.copy(alpha = 0.2f),
-                Color.White
-            )
 
-            PlayerButtonsStyle.PRIMARY -> Pair(
-                MaterialTheme.colorScheme.primaryContainer,
-                MaterialTheme.colorScheme.onPrimaryContainer
-            )
+        PlayerButtonsStyle.PRIMARY -> Pair(
+            MaterialTheme.colorScheme.primaryContainer,
+            MaterialTheme.colorScheme.onPrimaryContainer
+        )
 
-            PlayerButtonsStyle.TERTIARY -> Pair(
-                MaterialTheme.colorScheme.tertiaryContainer,
-                MaterialTheme.colorScheme.onTertiaryContainer
-            )
-        }
+        PlayerButtonsStyle.TERTIARY -> Pair(
+            MaterialTheme.colorScheme.tertiaryContainer,
+            MaterialTheme.colorScheme.onTertiaryContainer
+        )
     }
 
     val download by LocalDownloadUtil.current.getDownload(mediaMetadata?.id ?: "")
@@ -965,7 +957,6 @@ fun BottomSheetPlayer(
 
     val bottomSheetBackgroundColor = when {
         isLocalMedia -> Color.Black
-        isFluidTheme() -> Color.Transparent
         playerBackground in listOf(
             PlayerBackgroundStyle.BLUR,
             PlayerBackgroundStyle.GRADIENT,
@@ -982,25 +973,15 @@ fun BottomSheetPlayer(
 
     val backgroundAlpha = state.progress.coerceIn(0f, 1f)
 
-    if (isFluidTheme()) {
-        PlayerMorphHostEffects(state = state)
-    }
-
-    // Capture this player's own background so foreground glass controls
-    // sample the player's own artwork/material instead of reflecting the tab underneath
-    val playerBackdrop = rememberLayerBackdrop()
-
     BottomSheet(
         state = state,
         modifier = modifier,
-        enableMorph = true,
         background = {
             val backgroundThumbnailUrl = mediaMetadata?.thumbnailUrl
                 ?: playerConnection.player.currentMediaItem?.mediaMetadata?.artworkUri?.toString()
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .layerBackdrop(playerBackdrop)
                     .background(bottomSheetBackgroundColor)
             ) {
                 when (playerBackground) {
@@ -1026,11 +1007,10 @@ fun BottomSheetPlayer(
                                             .fillMaxSize()
                                             .blur(if (useDarkTheme) 150.dp else 100.dp)
                                     )
-                                    val blurScrimAlpha = if (isFluidTheme()) 0.08f else 0.3f
                                     Box(
                                         modifier = Modifier
                                             .fillMaxSize()
-                                            .background(Color.Black.copy(alpha = blurScrimAlpha))
+                                            .background(Color.Black.copy(alpha = 0.3f))
                                     )
                                 }
                             }
@@ -1046,7 +1026,6 @@ fun BottomSheetPlayer(
                             label = "gradientBackground"
                         ) { colors ->
                             if (colors.isNotEmpty()) {
-                                val isFluid = isFluidTheme()
                                 val gradientColorStops = if (colors.size >= 3) {
                                     arrayOf(
                                         0.0f to colors[0],
@@ -1055,26 +1034,18 @@ fun BottomSheetPlayer(
                                     )
                                 } else {
                                     val secondColor = if (colors.size > 1) colors[1] else colors[0].copy(alpha = 0.75f)
-                                    val thirdColor = if (isFluid) {
-                                        if (useDarkTheme) secondColor.copy(alpha = 0.50f) else secondColor.copy(alpha = 0.85f)
-                                    } else {
-                                        Color.Black
-                                    }
                                     arrayOf(
                                         0.0f to colors[0],
                                         0.55f to secondColor,
-                                        1.0f to thirdColor
+                                        1.0f to Color.Black
                                     )
                                 }
-                                val gradientScrimAlpha = if (isFluid) 0.0f else 0.2f
                                 Box(
                                     Modifier
                                         .fillMaxSize()
                                         .alpha(backgroundAlpha)
                                         .background(Brush.verticalGradient(colorStops = gradientColorStops))
-                                        .then(
-                                            if (gradientScrimAlpha > 0f) Modifier.background(Color.Black.copy(alpha = gradientScrimAlpha)) else Modifier
-                                        )
+                                        .background(Color.Black.copy(alpha = 0.2f))
                                 )
                             }
                         }
@@ -1331,13 +1302,46 @@ fun BottomSheetPlayer(
 
                     PlayerBackgroundStyle.LIVE_MESH -> {
                         val palette = rememberArtworkMeshPalette(
-                            imageUrl = backgroundThumbnailUrl
+                            imageUrl = backgroundThumbnailUrl,
+                            canvasFrame = liveCanvasFrame
                         )
                         MeshGradientBackground(
                             palette = palette,
                             modifier = Modifier
                                 .fillMaxSize()
                                 .alpha(backgroundAlpha)
+                        )
+                    }
+
+                    PlayerBackgroundStyle.FLUID_MESH -> {
+                        val palette = rememberArtworkMeshPalette(
+                            imageUrl = backgroundThumbnailUrl,
+                            canvasFrame = liveCanvasFrame
+                        )
+                        MeshGradientBackground(
+                            palette = palette,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(backgroundAlpha),
+                            driftMillis = 20_000
+                        )
+                    }
+
+                    PlayerBackgroundStyle.STATIC -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(backgroundAlpha)
+                                .background(Color(staticColor))
+                        )
+                    }
+
+                    PlayerBackgroundStyle.CUSTOM_GRADIENT -> {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .alpha(backgroundAlpha)
+                                .tiltedGradient(gradientStops, gradientAngle)
                         )
                     }
 
@@ -1358,30 +1362,7 @@ fun BottomSheetPlayer(
                 durationState = durationState
             )
         },
-        overlayContent = {
-            if (isFluidTheme()) {
-                CompositionLocalProvider(
-                    LocalAppBackdrop provides playerBackdrop,
-                    LocalPooledGlass provides null,
-                ) {
-                    val currentMedia = mediaMetadata
-                        ?: playerConnection.player.currentMediaItem?.metadata
-                    PlayerMorphHost(
-                        progress = { state.progress },
-                        thumbnailUrl = currentMedia?.thumbnailUrl
-                            ?: playerConnection.player.currentMediaItem?.mediaMetadata?.artworkUri?.toString(),
-                        mediaId = currentMedia?.id,
-                        containerColor = bottomSheetBackgroundColor,
-                        expandedCornerRadius = 0.dp,
-                    )
-                }
-            }
-        },
     ) {
-        CompositionLocalProvider(
-            LocalAppBackdrop provides playerBackdrop,
-            LocalPooledGlass provides null,
-        ) {
             val controlsContent: @Composable ColumnScope.(MediaMetadata) -> Unit = { mediaMetadata ->
                 val playPauseRoundness by animateDpAsState(
                     targetValue = if (isPlaying) 24.dp else 36.dp,
@@ -1404,10 +1385,7 @@ fun BottomSheetPlayer(
                         if (showLyrics) {
                             Row {
                                 if (hidePlayerThumbnail) {
-                                    val thumbShape =
-                                        if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(
-                                            ThumbnailCornerRadius
-                                        )
+                                    val thumbShape = RoundedCornerShape(ThumbnailCornerRadius)
                                     Box(
                                         modifier = Modifier
                                             .size(56.dp)
@@ -1424,10 +1402,7 @@ fun BottomSheetPlayer(
                                         )
                                     }
                                 } else {
-                                    val thumbShape =
-                                        if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(
-                                            ThumbnailCornerRadius
-                                        )
+                                    val thumbShape = RoundedCornerShape(ThumbnailCornerRadius)
                                     Box(
                                         contentAlignment = Alignment.Center,
                                         modifier = Modifier
@@ -1620,24 +1595,17 @@ fun BottomSheetPlayer(
 
                     Spacer(modifier = Modifier.width(12.dp))
 
-                    val isFluid = isFluidTheme()
-                    val shareShape = if (isFluid) ContinuousRoundedRectangle(
-                        topStart = 50.dp, bottomStart = 50.dp,
-                        topEnd = 3.dp, bottomEnd = 3.dp
-                    ) else RoundedCornerShape(
+                    val shareShape = RoundedCornerShape(
                         topStart = 50.dp, bottomStart = 50.dp,
                         topEnd = 3.dp, bottomEnd = 3.dp
                     )
 
-                    val favShape = if (isFluid) ContinuousRoundedRectangle(
-                        topStart = 3.dp, bottomStart = 3.dp,
-                        topEnd = 50.dp, bottomEnd = 50.dp
-                    ) else RoundedCornerShape(
+                    val favShape = RoundedCornerShape(
                         topStart = 3.dp, bottomStart = 3.dp,
                         topEnd = 50.dp, bottomEnd = 50.dp
                     )
 
-                    val middleShape = if (isFluid) ContinuousRoundedRectangle(3.dp) else RoundedCornerShape(3.dp)
+                    val middleShape = RoundedCornerShape(3.dp)
 
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(6.dp),
@@ -1645,34 +1613,20 @@ fun BottomSheetPlayer(
                     ) {
                         AnimatedContent(targetState = showInlineLyrics, label = "DownloadButton") { showLyrics ->
                             if (showLyrics) {
-                                if (isFluid) {
-                                    GlassCircleButton(
-                                        onClick = { isFullScreen = !isFullScreen },
-                                        shape = shareShape,
-                                        size = 42.dp,
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.fullscreen),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                } else {
-                                    FilledIconButton(
-                                        onClick = { isFullScreen = !isFullScreen },
-                                        shape = shareShape,
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = textButtonColor,
-                                            contentColor = iconButtonColor,
-                                        ),
-                                        modifier = Modifier.size(42.dp),
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.fullscreen),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
+                                FilledIconButton(
+                                    onClick = { isFullScreen = !isFullScreen },
+                                    shape = shareShape,
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = textButtonColor,
+                                        contentColor = iconButtonColor,
+                                    ),
+                                    modifier = Modifier.size(42.dp),
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.fullscreen),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             } else {
                                 val onDownloadClick: () -> Unit = {
@@ -1707,68 +1661,36 @@ fun BottomSheetPlayer(
                                         }
                                     }
                                 }
-                                if (isFluid) {
-                                    GlassCircleButton(
-                                        onClick = onDownloadClick,
-                                        shape = shareShape,
-                                        size = 42.dp,
-                                    ) {
-                                        when (download?.state) {
-                                            Download.STATE_COMPLETED -> {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.offline),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            }
-
-                                            Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
-                                                CircularWavyProgressIndicator(
-                                                    modifier = Modifier.size(24.dp),
-                                                )
-                                            }
-
-                                            else -> {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.download),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            }
+                                FilledIconButton(
+                                    onClick = onDownloadClick,
+                                    shape = shareShape,
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = textButtonColor,
+                                        contentColor = iconButtonColor,
+                                    ),
+                                    modifier = Modifier.size(42.dp),
+                                ) {
+                                    when (download?.state) {
+                                        Download.STATE_COMPLETED -> {
+                                            Icon(
+                                                painter = painterResource(R.drawable.offline),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp)
+                                            )
                                         }
-                                    }
-                                } else {
-                                    FilledIconButton(
-                                        onClick = onDownloadClick,
-                                        shape = shareShape,
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = textButtonColor,
-                                            contentColor = iconButtonColor,
-                                        ),
-                                        modifier = Modifier.size(42.dp),
-                                    ) {
-                                        when (download?.state) {
-                                            Download.STATE_COMPLETED -> {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.offline),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            }
 
-                                            Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
-                                                CircularWavyProgressIndicator(
-                                                    modifier = Modifier.size(24.dp),
-                                                )
-                                            }
+                                        Download.STATE_QUEUED, Download.STATE_DOWNLOADING -> {
+                                            CircularWavyProgressIndicator(
+                                                modifier = Modifier.size(24.dp),
+                                            )
+                                        }
 
-                                            else -> {
-                                                Icon(
-                                                    painter = painterResource(R.drawable.download),
-                                                    contentDescription = null,
-                                                    modifier = Modifier.size(24.dp)
-                                                )
-                                            }
+                                        else -> {
+                                            Icon(
+                                                painter = painterResource(R.drawable.download),
+                                                contentDescription = null,
+                                                modifier = Modifier.size(24.dp)
+                                            )
                                         }
                                     }
                                 }
@@ -1778,16 +1700,15 @@ fun BottomSheetPlayer(
                         AnimatedContent(targetState = showInlineLyrics, label = "LikeButton") { showLyrics ->
                             if (showLyrics) {
                                 val currentLyrics by playerConnection.currentLyrics.collectAsState(initial = null)
-                                val currentBackdrop = LocalAppBackdrop.current
                                 val onLyricsMenuClick: () -> Unit = {
-                                    menuState.show(backdrop = currentBackdrop) {
+                                    menuState.show {
                                         pushkar.chorus.music.ui.menu.LyricsMenu(
                                             lyricsProvider = { currentLyrics },
                                             songProvider = { currentSong?.song },
                                             mediaMetadataProvider = { mediaMetadata },
                                             onDismiss = menuState::dismiss,
                                             onShowOffsetDialog = {
-                                                bottomSheetPageState.show(backdrop = currentBackdrop) {
+                                                bottomSheetPageState.show {
                                                     ShowOffsetDialog(
                                                         songProvider = { currentSong?.song }
                                                     )
@@ -1796,73 +1717,40 @@ fun BottomSheetPlayer(
                                         )
                                     }
                                 }
-                                if (isFluid) {
-                                    GlassCircleButton(
-                                        onClick = onLyricsMenuClick,
-                                        shape = favShape,
-                                        size = 42.dp,
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.more_horiz),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
-                                } else {
-                                    FilledIconButton(
-                                        onClick = onLyricsMenuClick,
-                                        shape = favShape,
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = textButtonColor,
-                                            contentColor = iconButtonColor,
-                                        ),
-                                        modifier = Modifier.size(42.dp),
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.more_horiz),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
+                                FilledIconButton(
+                                    onClick = onLyricsMenuClick,
+                                    shape = favShape,
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = textButtonColor,
+                                        contentColor = iconButtonColor,
+                                    ),
+                                    modifier = Modifier.size(42.dp),
+                                ) {
+                                    Icon(
+                                        painter = painterResource(R.drawable.more_horiz),
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             } else {
-                                if (isFluid) {
-                                    GlassCircleButton(
-                                        onClick = playerConnection::toggleLike,
-                                        shape = favShape,
-                                        size = 42.dp,
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(
-                                                if (currentSong?.song?.liked == true)
-                                                    R.drawable.favorite
-                                                else R.drawable.favorite_border
-                                            ),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp),
-                                            tint = if (currentSong?.song?.liked == true) Color(0xFFFF453A) else androidx.compose.material3.LocalContentColor.current
-                                        )
-                                    }
-                                } else {
-                                    FilledIconButton(
-                                        onClick = playerConnection::toggleLike,
-                                        shape = favShape,
-                                        colors = IconButtonDefaults.filledIconButtonColors(
-                                            containerColor = textButtonColor,
-                                            contentColor = iconButtonColor,
+                                FilledIconButton(
+                                    onClick = playerConnection::toggleLike,
+                                    shape = favShape,
+                                    colors = IconButtonDefaults.filledIconButtonColors(
+                                        containerColor = textButtonColor,
+                                        contentColor = iconButtonColor,
+                                    ),
+                                    modifier = Modifier.size(42.dp),
+                                ) {
+                                    Icon(
+                                        painter = painterResource(
+                                            if (currentSong?.song?.liked == true)
+                                                R.drawable.favorite
+                                            else R.drawable.favorite_border
                                         ),
-                                        modifier = Modifier.size(42.dp),
-                                    ) {
-                                        Icon(
-                                            painter = painterResource(
-                                                if (currentSong?.song?.liked == true)
-                                                    R.drawable.favorite
-                                                else R.drawable.favorite_border
-                                            ),
-                                            contentDescription = null,
-                                            modifier = Modifier.size(24.dp)
-                                        )
-                                    }
+                                        contentDescription = null,
+                                        modifier = Modifier.size(24.dp)
+                                    )
                                 }
                             }
                         }
@@ -2342,47 +2230,24 @@ fun BottomSheetPlayer(
                                 label = "nextButtonScale"
                             )
 
-                            val isFluid = isFluidTheme()
-
-                            if (isFluid) {
-                                GlassCircleButton(
-                                    onClick = playerConnection::seekToPrevious,
-                                    enabled = canSkipPrevious && !isListenTogetherGuest,
-                                    size = 68.dp,
-                                    shape = ContinuousRoundedRectangle(percent = 50),
-                                    modifier = Modifier.graphicsLayer {
-                                        scaleX = backButtonScale; scaleY = backButtonScale
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.skip_previous),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                        tint = if (canSkipPrevious && !isListenTogetherGuest) androidx.compose.material3.LocalContentColor.current else androidx.compose.material3.LocalContentColor.current.copy(
-                                            alpha = 0.4f
-                                        )
-                                    )
-                                }
-                            } else {
-                                FilledIconButton(
-                                    onClick = playerConnection::seekToPrevious,
-                                    enabled = canSkipPrevious && !isListenTogetherGuest,
-                                    shape = CircleShape,
-                                    interactionSource = backInteractionSource,
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = sideButtonContainerColor,
-                                        contentColor = sideButtonContentColor,
-                                    ),
-                                    modifier = Modifier
-                                        .size(68.dp)
-                                        .graphicsLayer { scaleX = backButtonScale; scaleY = backButtonScale }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.skip_previous),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
+                            FilledIconButton(
+                                onClick = playerConnection::seekToPrevious,
+                                enabled = canSkipPrevious && !isListenTogetherGuest,
+                                shape = CircleShape,
+                                interactionSource = backInteractionSource,
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = sideButtonContainerColor,
+                                    contentColor = sideButtonContentColor,
+                                ),
+                                modifier = Modifier
+                                    .size(68.dp)
+                                    .graphicsLayer { scaleX = backButtonScale; scaleY = backButtonScale }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.skip_previous),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
 
                             Spacer(modifier = Modifier.width(24.dp))
@@ -2425,133 +2290,70 @@ fun BottomSheetPlayer(
                                 if (cookieIndent > 0f) WavyShape(9, cookieIndent, rotation) else null
                             }
 
-                            if (isFluid) {
-                                GlassCircleButton(
-                                    onClick = playPauseAction,
-                                    shape = cookieShape ?: GlassCircleShape,
-                                    size = 84.dp,
-                                    modifier = Modifier.graphicsLayer {
-                                        scaleX = playPauseScale; scaleY = playPauseScale
-                                    }
+                            FilledIconButton(
+                                onClick = playPauseAction,
+                                shape = cookieShape ?: CircleShape,
+                                interactionSource = playPauseInteractionSource,
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = textButtonColor,
+                                    contentColor = iconButtonColor,
+                                ),
+                                modifier = Modifier
+                                    .size(84.dp)
+                                    .graphicsLayer { scaleX = playPauseScale; scaleY = playPauseScale }
+                            ) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.Center
                                 ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        if (playbackState == Player.STATE_BUFFERING && effectiveIsPlaying) {
-                                            androidx.compose.material3.CircularProgressIndicator(
-                                                color = androidx.compose.material3.LocalContentColor.current,
-                                                modifier = Modifier.size(36.dp),
-                                                strokeWidth = 3.dp
-                                            )
-                                        } else {
-                                            Icon(
-                                                painter = painterResource(
-                                                    if (isListenTogetherGuest) {
-                                                        if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-                                                    } else {
-                                                        if (effectiveIsPlaying) R.drawable.pause else R.drawable.play
-                                                    }
-                                                ),
-                                                contentDescription = if (isListenTogetherGuest) {
-                                                    if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute)
+                                    if (playbackState == Player.STATE_BUFFERING && effectiveIsPlaying) {
+                                        androidx.compose.material3.CircularProgressIndicator(
+                                            color = iconButtonColor,
+                                            modifier = Modifier.size(36.dp),
+                                            strokeWidth = 3.dp
+                                        )
+                                    } else {
+                                        Icon(
+                                            painter = painterResource(
+                                                if (isListenTogetherGuest) {
+                                                    if (isMuted) R.drawable.volume_off else R.drawable.volume_up
                                                 } else {
-                                                    if (effectiveIsPlaying) stringResource(R.string.pause) else stringResource(
-                                                        R.string.play
-                                                    )
-                                                },
-                                                modifier = Modifier.size(36.dp)
-                                            )
-                                        }
-                                    }
-                                }
-                            } else {
-                                FilledIconButton(
-                                    onClick = playPauseAction,
-                                    shape = cookieShape ?: CircleShape,
-                                    interactionSource = playPauseInteractionSource,
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = textButtonColor,
-                                        contentColor = iconButtonColor,
-                                    ),
-                                    modifier = Modifier
-                                        .size(84.dp)
-                                        .graphicsLayer { scaleX = playPauseScale; scaleY = playPauseScale }
-                                ) {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        horizontalArrangement = Arrangement.Center
-                                    ) {
-                                        if (playbackState == Player.STATE_BUFFERING && effectiveIsPlaying) {
-                                            androidx.compose.material3.CircularProgressIndicator(
-                                                color = iconButtonColor,
-                                                modifier = Modifier.size(36.dp),
-                                                strokeWidth = 3.dp
-                                            )
-                                        } else {
-                                            Icon(
-                                                painter = painterResource(
-                                                    if (isListenTogetherGuest) {
-                                                        if (isMuted) R.drawable.volume_off else R.drawable.volume_up
-                                                    } else {
-                                                        if (effectiveIsPlaying) R.drawable.pause else R.drawable.play
-                                                    }
-                                                ),
-                                                contentDescription = if (isListenTogetherGuest) {
-                                                    if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute)
-                                                } else {
-                                                    if (effectiveIsPlaying) stringResource(R.string.pause) else stringResource(
-                                                        R.string.play
-                                                    )
-                                                },
-                                                modifier = Modifier.size(36.dp)
-                                            )
-                                        }
+                                                    if (effectiveIsPlaying) R.drawable.pause else R.drawable.play
+                                                }
+                                            ),
+                                            contentDescription = if (isListenTogetherGuest) {
+                                                if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute)
+                                            } else {
+                                                if (effectiveIsPlaying) stringResource(R.string.pause) else stringResource(
+                                                    R.string.play
+                                                )
+                                            },
+                                            modifier = Modifier.size(36.dp)
+                                        )
                                     }
                                 }
                             }
 
                             Spacer(modifier = Modifier.width(24.dp))
 
-                            if (isFluid) {
-                                GlassCircleButton(
-                                    onClick = playerConnection::seekToNext,
-                                    enabled = canSkipNext && !isListenTogetherGuest,
-                                    size = 68.dp,
-                                    shape = ContinuousRoundedRectangle(percent = 50),
-                                    modifier = Modifier.graphicsLayer {
-                                        scaleX = nextButtonScale; scaleY = nextButtonScale
-                                    }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.skip_next),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp),
-                                        tint = if (canSkipNext && !isListenTogetherGuest) androidx.compose.material3.LocalContentColor.current else androidx.compose.material3.LocalContentColor.current.copy(
-                                            alpha = 0.4f
-                                        )
-                                    )
-                                }
-                            } else {
-                                FilledIconButton(
-                                    onClick = playerConnection::seekToNext,
-                                    enabled = canSkipNext && !isListenTogetherGuest,
-                                    shape = CircleShape,
-                                    interactionSource = nextInteractionSource,
-                                    colors = IconButtonDefaults.filledIconButtonColors(
-                                        containerColor = sideButtonContainerColor,
-                                        contentColor = sideButtonContentColor,
-                                    ),
-                                    modifier = Modifier
-                                        .size(68.dp)
-                                        .graphicsLayer { scaleX = nextButtonScale; scaleY = nextButtonScale }
-                                ) {
-                                    Icon(
-                                        painter = painterResource(R.drawable.skip_next),
-                                        contentDescription = null,
-                                        modifier = Modifier.size(32.dp)
-                                    )
-                                }
+                            FilledIconButton(
+                                onClick = playerConnection::seekToNext,
+                                enabled = canSkipNext && !isListenTogetherGuest,
+                                shape = CircleShape,
+                                interactionSource = nextInteractionSource,
+                                colors = IconButtonDefaults.filledIconButtonColors(
+                                    containerColor = sideButtonContainerColor,
+                                    contentColor = sideButtonContentColor,
+                                ),
+                                modifier = Modifier
+                                    .size(68.dp)
+                                    .graphicsLayer { scaleX = nextButtonScale; scaleY = nextButtonScale }
+                            ) {
+                                Icon(
+                                    painter = painterResource(R.drawable.skip_next),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(32.dp)
+                                )
                             }
                         }
                     }
@@ -2608,6 +2410,7 @@ fun BottomSheetPlayer(
                                         isPlayerExpanded = isExpandedProvider,
                                         isLandscape = true,
                                         isListenTogetherGuest = isListenTogetherGuest,
+                                        onFrameSampled = { liveCanvasFrame = it },
                                         trailingHeaderContent = {
                                             mediaMetadata?.let {
                                                 PlayerMoreMenuButton(
@@ -2682,6 +2485,7 @@ fun BottomSheetPlayer(
                                         modifier = Modifier.nestedScroll(state.preUpPostDownNestedScrollConnection),
                                         isPlayerExpanded = isExpandedProvider,
                                         isListenTogetherGuest = isListenTogetherGuest,
+                                        onFrameSampled = { liveCanvasFrame = it },
                                         trailingHeaderContent = {
                                             mediaMetadata?.let {
                                                 PlayerMoreMenuButton(
@@ -2717,9 +2521,7 @@ fun BottomSheetPlayer(
                     playerBottomSheetState = state,
                     navController = navController,
                     background =
-                        if (isFluidTheme()) {
-                            Color.Transparent
-                        } else if (useBlackBackground) {
+                        if (useBlackBackground) {
                             Color.Black
                         } else {
                             MaterialTheme.colorScheme.surface
@@ -2737,7 +2539,6 @@ fun BottomSheetPlayer(
                     },
                 )
             }
-        }
     }
 }
 
@@ -2836,18 +2637,16 @@ fun MoreActionsButton(
 ) {
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
-    val isFluid = isFluidTheme()
 
-    val currentBackdrop = LocalAppBackdrop.current
     val onActionClick: () -> Unit = {
-        menuState.show(backdrop = currentBackdrop) {
+        menuState.show {
             PlayerMenu(
                 mediaMetadata = mediaMetadata,
                 navController = navController,
                 playerBottomSheetState = state,
                 onShowDetailsDialog = {
                     mediaMetadata.id.let {
-                        bottomSheetPageState.show(backdrop = currentBackdrop) {
+                        bottomSheetPageState.show {
                             ShowMediaInfo(it)
                         }
                     }
@@ -2857,33 +2656,18 @@ fun MoreActionsButton(
         }
     }
 
-    if (isFluid) {
-        GlassCircleButton(
-            onClick = onActionClick,
-            shape = ContinuousRoundedRectangle(percent = 50),
-            size = 40.dp
-        ) {
-            Image(
-                painter = painterResource(R.drawable.more_vert),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.9f)),
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    } else {
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(24.dp))
-                .background(textButtonColor)
-                .clickable(onClick = onActionClick)
-        ) {
-            Image(
-                painter = painterResource(R.drawable.more_vert),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(iconButtonColor)
-            )
-        }
+    Box(
+        modifier = Modifier
+            .size(40.dp)
+            .clip(RoundedCornerShape(24.dp))
+            .background(textButtonColor)
+            .clickable(onClick = onActionClick)
+    ) {
+        Image(
+            painter = painterResource(R.drawable.more_vert),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(iconButtonColor)
+        )
     }
 }
 
@@ -2897,18 +2681,16 @@ private fun PlayerMoreMenuButton(
 ) {
     val menuState = LocalMenuState.current
     val bottomSheetPageState = LocalBottomSheetPageState.current
-    val isFluid = isFluidTheme()
 
-    val currentBackdrop = LocalAppBackdrop.current
     val onMenuClick: () -> Unit = {
-        menuState.show(backdrop = currentBackdrop) {
+        menuState.show {
             PlayerMenu(
                 mediaMetadata = mediaMetadata,
                 navController = navController,
                 playerBottomSheetState = state,
                 onShowDetailsDialog = {
                     mediaMetadata.id.let {
-                        bottomSheetPageState.show(backdrop = currentBackdrop) {
+                        bottomSheetPageState.show {
                             ShowMediaInfo(it)
                         }
                     }
@@ -2918,35 +2700,20 @@ private fun PlayerMoreMenuButton(
         }
     }
 
-    if (isFluid) {
-        GlassCircleButton(
-            onClick = onMenuClick,
-            shape = ContinuousRoundedRectangle(percent = 50),
-            size = 40.dp
-        ) {
-            Image(
-                painter = painterResource(R.drawable.more_horiz),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(Color.White.copy(alpha = 0.9f)),
-                modifier = Modifier.size(24.dp)
-            )
-        }
-    } else {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier =
-                Modifier
-                    .size(40.dp)
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(textButtonColor)
-                    .clickable(onClick = onMenuClick),
-        ) {
-            Image(
-                painter = painterResource(R.drawable.more_horiz),
-                contentDescription = null,
-                colorFilter = ColorFilter.tint(iconButtonColor),
-            )
-        }
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier =
+            Modifier
+                .size(40.dp)
+                .clip(RoundedCornerShape(24.dp))
+                .background(textButtonColor)
+                .clickable(onClick = onMenuClick),
+    ) {
+        Image(
+            painter = painterResource(R.drawable.more_horiz),
+            contentDescription = null,
+            colorFilter = ColorFilter.tint(iconButtonColor),
+        )
     }
 }
 

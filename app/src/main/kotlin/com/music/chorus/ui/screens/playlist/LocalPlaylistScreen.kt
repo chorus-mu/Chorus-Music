@@ -37,8 +37,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.FilledIconToggleButton
@@ -1092,7 +1090,7 @@ fun LocalPlaylistHeader(
                         if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
                         else Modifier.fillMaxWidth().padding(horizontal = 48.dp).aspectRatio(1f)
                     )
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(8.dp))
+                    .clip(RoundedCornerShape(8.dp))
             ) {
             when (playlist.thumbnails.size) {
                 0 -> Surface(
@@ -1293,7 +1291,7 @@ fun LocalPlaylistHeader(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                shape = CircleShape,
                 colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -1324,7 +1322,7 @@ fun LocalPlaylistHeader(
                 modifier = Modifier
                     .weight(1f)
                     .height(48.dp),
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                shape = CircleShape,
                 colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -1399,7 +1397,7 @@ fun LocalPlaylistHeader(
                         )
                     }
                 },
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape,
+                shape = CircleShape,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.size(48.dp)
             ) {
@@ -1465,7 +1463,7 @@ private fun MetadataChip(
 ) {
     Surface(
         modifier = modifier,
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(20.dp) else RoundedCornerShape(20.dp),
+        shape = RoundedCornerShape(20.dp),
         color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.7f)
     ) {
         Row(

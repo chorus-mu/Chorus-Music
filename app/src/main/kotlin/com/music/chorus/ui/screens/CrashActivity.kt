@@ -17,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -174,7 +172,7 @@ fun CrashScreen(
                     )
                 },
                 text = { Text(stringResource(R.string.crash_share_logs)) },
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else FloatingActionButtonDefaults.extendedFabShape,
+                shape = FloatingActionButtonDefaults.extendedFabShape,
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 contentColor = MaterialTheme.colorScheme.onPrimaryContainer
             )
@@ -199,7 +197,7 @@ fun CrashScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp))
+                    .clip(RoundedCornerShape(16.dp))
                     .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                     .padding(16.dp)
             ) {

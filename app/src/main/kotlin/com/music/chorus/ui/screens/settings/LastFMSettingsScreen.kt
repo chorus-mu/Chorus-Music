@@ -35,8 +35,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import pushkar.chorus.music.ui.component.TopBarBackButton
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -128,10 +126,9 @@ fun LastFMSettingsScreen(
     if (showLoginDialog) {
         var tempUsername by rememberSaveable { mutableStateOf("") }
         var tempPassword by rememberSaveable { mutableStateOf("") }
-        val isFluid = isFluidTheme()
 
         AlertDialog(
-            shape = if (isFluid) ContinuousRoundedRectangle(26.dp) else AlertDialogDefaults.shape,
+            shape = AlertDialogDefaults.shape,
             properties = DialogProperties(usePlatformDefaultWidth = false),
             onDismissRequest = {
                 if (!isLoggingIn) {
@@ -155,7 +152,7 @@ fun LastFMSettingsScreen(
                         label = { Text(stringResource(R.string.username)) },
                         singleLine = true,
                         enabled = !isLoggingIn,
-                        shape = if (isFluid) ContinuousRoundedRectangle(12.dp) else OutlinedTextFieldDefaults.shape,
+                        shape = OutlinedTextFieldDefaults.shape,
                     )
                     OutlinedTextField(
                         value = tempPassword,
@@ -168,7 +165,7 @@ fun LastFMSettingsScreen(
                         visualTransformation = PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         enabled = !isLoggingIn,
-                        shape = if (isFluid) ContinuousRoundedRectangle(12.dp) else OutlinedTextFieldDefaults.shape,
+                        shape = OutlinedTextFieldDefaults.shape,
                     )
 
                     loginError?.let { error ->
@@ -200,7 +197,7 @@ fun LastFMSettingsScreen(
             },
             confirmButton = {
                 TextButton(
-                    shape = if (isFluid) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.textShape,
+                    shape = ButtonDefaults.textShape,
                     onClick = {
                         if (tempUsername.isBlank() || tempPassword.isBlank()) {
                             loginError = "Please enter both username and password"
@@ -261,7 +258,7 @@ fun LastFMSettingsScreen(
             },
             dismissButton = {
                 TextButton(
-                    shape = if (isFluid) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.textShape,
+                    shape = ButtonDefaults.textShape,
                     onClick = {
                         if (!isLoggingIn) {
                             showLoginDialog = false
@@ -307,7 +304,7 @@ fun LastFMSettingsScreen(
                     trailingContent = {
                         if (isLoggedIn) {
                             OutlinedButton(
-                                shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.outlinedShape,
+                                shape = ButtonDefaults.outlinedShape,
                                 onClick = {
                                     lastfmSession = ""
                                     lastfmUsername = ""
@@ -317,7 +314,7 @@ fun LastFMSettingsScreen(
                             }
                         } else {
                             OutlinedButton(
-                                shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.outlinedShape,
+                                shape = ButtonDefaults.outlinedShape,
                                 onClick = { showLoginDialog = true }
                             ) {
                                 Text(stringResource(R.string.action_login))

@@ -180,7 +180,7 @@ fun OnlineSearchScreen(
             }
         }
 
-        itemsIndexed(viewState.suggestions, key = { _, it -> "suggestion_$it" }) { index, query ->
+        itemsIndexed(viewState.suggestions, key = { index, it -> "suggestion_${index}_$it" }) { index, query ->
             SuggestionItem(
                 query = query,
                 online = true,

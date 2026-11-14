@@ -7,12 +7,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.ui.graphics.Color
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -75,29 +69,15 @@ fun SettingDialoge(
         val primaryColor = MaterialTheme.colorScheme.onSurface
         val onSecondaryColor = MaterialTheme.colorScheme.onSurfaceVariant
 
-        val isFluid = isFluidTheme()
-        val isDark = isSystemInDarkTheme()
-        val dialogShape = if (isFluid) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp)
+        val dialogShape = RoundedCornerShape(28.dp)
 
         Card(
             modifier = Modifier
                 .padding(24.dp)
-                .fillMaxWidth()
-                .then(
-                    if (isFluid) {
-                        Modifier
-                            .clip(dialogShape)
-                            .fluidGlass(
-                                shape = dialogShape,
-                                intensity = GlassIntensity.Prominent,
-                                surfaceColor = if (isDark) Color(0x661C1C20) else Color(0x80FFFFFF),
-                                surfaceAlpha = if (isDark) 0.45f else 0.55f
-                            )
-                    } else Modifier
-                ),
+                .fillMaxWidth(),
             shape = dialogShape,
             colors = CardDefaults.cardColors(
-                containerColor = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh
+                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
             ),
             elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
         ) {

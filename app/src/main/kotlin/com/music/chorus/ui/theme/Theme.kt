@@ -21,71 +21,43 @@ import com.materialkolor.dynamiccolor.ColorSpec
 import com.materialkolor.rememberDynamicColorScheme
 import com.materialkolor.score.Score
 
-import pushkar.chorus.music.constants.AppThemeMode
-import pushkar.chorus.music.ui.fluid.foundation.DefaultFluidAccent
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-
-val LocalAppThemeMode = androidx.compose.runtime.compositionLocalOf { AppThemeMode.MaterialUI }
-
-@Composable
-@androidx.compose.runtime.ReadOnlyComposable
-fun isFluidTheme(): Boolean = LocalAppThemeMode.current == AppThemeMode.FluidUI
-
 val DefaultThemeColor = Color.Black
 
 @Composable
 fun chorusmusicTheme(
-    themeMode: AppThemeMode = AppThemeMode.MaterialUI,
     darkTheme: Boolean = isSystemInDarkTheme(),
     pureBlack: Boolean = true,
     themeColor: Color = DefaultThemeColor,
     content: @Composable () -> Unit,
 ) {
-    androidx.compose.runtime.CompositionLocalProvider(
-        LocalAppThemeMode provides themeMode
-    ) {
-        if (themeMode == AppThemeMode.FluidUI) {
-            val fluidAccent = if (themeColor != DefaultThemeColor) {
-                themeColor
-            } else {
-                if (darkTheme) Color(0xFFF2F2F7) else Color(0xFF1C1C1E)
-            }
-            FluidTheme(
-                darkTheme = darkTheme,
-                accent = fluidAccent,
-                content = content
-            )
-        } else {
-            val context = LocalContext.current
-        val useSystemDynamicColor = false
+    val context = LocalContext.current
+    val useSystemDynamicColor = false
 
-        val baseColorScheme = if (useSystemDynamicColor && themeColor != DefaultThemeColor) {
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        } else {
-            val style = if (themeColor == DefaultThemeColor) PaletteStyle.Monochrome else PaletteStyle.TonalSpot
-            rememberDynamicColorScheme(
-                seedColor = themeColor,
-                isDark = darkTheme,
-                specVersion = ColorSpec.SpecVersion.SPEC_2025,
-                style = style
-            )
-        }
-
-        val colorScheme = remember(baseColorScheme, pureBlack, darkTheme) {
-            if (darkTheme) {
-                baseColorScheme.pureBlack(true)
-            } else {
-                baseColorScheme
-            }
-        }
-
-        MaterialTheme(
-            colorScheme = colorScheme,
-            typography = AppTypography,
-            content = content
+    val baseColorScheme = if (useSystemDynamicColor && themeColor != DefaultThemeColor) {
+        if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
+    } else {
+        val style = if (themeColor == DefaultThemeColor) PaletteStyle.Monochrome else PaletteStyle.TonalSpot
+        rememberDynamicColorScheme(
+            seedColor = themeColor,
+            isDark = darkTheme,
+            specVersion = ColorSpec.SpecVersion.SPEC_2025,
+            style = style
         )
     }
+
+    val colorScheme = remember(baseColorScheme, pureBlack, darkTheme) {
+        if (darkTheme) {
+            baseColorScheme.pureBlack(true)
+        } else {
+            baseColorScheme
+        }
     }
+
+    MaterialTheme(
+        colorScheme = colorScheme,
+        typography = AppTypography,
+        content = content
+    )
 }
 
 fun Bitmap.extractThemeColor(): Color {

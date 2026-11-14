@@ -49,8 +49,6 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -228,7 +226,7 @@ fun CommunityPlaylistCard(
         colors = CardDefaults.cardColors(
             containerColor = containerColor
         ),
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp),
+        shape = RoundedCornerShape(28.dp),
         onClick = onClick
     ) {
         Column(
@@ -244,7 +242,7 @@ fun CommunityPlaylistCard(
                 Box(
                     modifier = Modifier
                         .size(100.dp)
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
                 ) {
                     Column(modifier = Modifier.fillMaxSize()) {
                         Row(modifier = Modifier.weight(1f)) {
@@ -317,7 +315,7 @@ fun CommunityPlaylistCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(vertical = 4.dp)
-                            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(12.dp))
+                            .clip(RoundedCornerShape(12.dp))
                             .combinedBounceClick(onClick = { onSongClick(song) }),
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -328,7 +326,7 @@ fun CommunityPlaylistCard(
                             modifier = Modifier
                                 .width(56.dp)
                                 .wrapContentHeight()
-                                .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(12.dp)),
+                                .clip(RoundedCornerShape(12.dp)),
                             contentScale = ContentScale.FillWidth
                         )
                         Column(modifier = Modifier.weight(1f)) {
@@ -364,7 +362,7 @@ fun CommunityPlaylistCard(
                     },
                     modifier = Modifier
                         .size(48.dp)
-                        .background(MaterialTheme.colorScheme.primaryContainer, if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape)
+                        .background(MaterialTheme.colorScheme.primaryContainer, CircleShape)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.ic_widget_play),
@@ -382,7 +380,7 @@ fun CommunityPlaylistCard(
                     },
                     modifier = Modifier
                         .size(48.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape)
+                        .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), CircleShape)
                 ) {
                     Icon(
                         painter = painterResource(R.drawable.radio),
@@ -434,7 +432,7 @@ fun CommunityPlaylistCard(
                     },
                     modifier = Modifier
                         .size(48.dp)
-                        .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else CircleShape)
+                        .background(MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f), CircleShape)
                 ) {
                     Icon(
                         painter = painterResource(if (isBookmarked) R.drawable.library_add_check else R.drawable.library_add),
@@ -466,7 +464,7 @@ fun DailyDiscoverCard(
     Card(
         modifier = modifier
             .fillMaxSize()
-            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp))
+            .clip(RoundedCornerShape(28.dp))
             .combinedBounceClick(
                 onClick = onClick,
                 onLongClick = {
@@ -485,7 +483,7 @@ fun DailyDiscoverCard(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant,
         ),
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else RoundedCornerShape(28.dp)
+        shape = RoundedCornerShape(28.dp)
     ) {
         BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
             AsyncImage(
@@ -1043,7 +1041,7 @@ fun HomeScreen(
                     if (downloadedSongs.isEmpty() && cachedSongs.isEmpty()) {
                         item(key = "offline_empty_state") {
                             androidx.compose.material3.Surface(
-                                shape = if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
+                                shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp),
                                 color = androidx.compose.material3.MaterialTheme.colorScheme.surfaceContainerLow,
                                 modifier = androidx.compose.ui.Modifier
                                     .fillMaxWidth()
@@ -1102,7 +1100,7 @@ fun HomeScreen(
                                 repeat(5) {
                                     TextPlaceholder(
                                         height = 30.dp,
-                                        shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+                                        shape = RoundedCornerShape(16.dp),
                                         modifier = Modifier.width(72.dp)
                                     )
                                 }
@@ -1352,10 +1350,10 @@ fun HomeScreen(
                                                     scaleY = scale
                                                     this.alpha = alpha
                                                 }
-                                                .clip(if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else MaterialTheme.shapes.extraLarge)
+                                                .clip(MaterialTheme.shapes.extraLarge)
                                                 .border(
                                                     BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant),
-                                                    if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else MaterialTheme.shapes.extraLarge
+                                                    MaterialTheme.shapes.extraLarge
                                                 )
                                                 .focusable()
                                                 .combinedBounceClick(
@@ -1537,7 +1535,7 @@ fun HomeScreen(
                                                     }
                                                 },
                                                 navController = navController,
-                                                modifier = Modifier.maskClip(if (isFluidTheme()) ContinuousRoundedRectangle(28.dp) else MaterialTheme.shapes.extraLarge)
+                                                modifier = Modifier.maskClip(MaterialTheme.shapes.extraLarge)
                                             )
                                         }
                                     }
@@ -1732,7 +1730,7 @@ fun HomeScreen(
                                         title = recommendation.title.title,
                                         thumbnail = recommendation.title.thumbnailUrl?.let { thumbnailUrl ->
                                             {
-                                                val shape = if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(ThumbnailCornerRadius)
+                                                val shape = RoundedCornerShape(ThumbnailCornerRadius)
                                                 AsyncImage(
                                                     model = thumbnailUrl,
                                                     contentDescription = null,
@@ -1782,7 +1780,7 @@ fun HomeScreen(
                                         label = sectionData.label,
                                         thumbnail = sectionData.thumbnail?.let { thumbnailUrl ->
                                             {
-                                                val shape = if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(ThumbnailCornerRadius)
+                                                val shape = RoundedCornerShape(ThumbnailCornerRadius)
                                                 AsyncImage(
                                                     model = thumbnailUrl,
                                                     contentDescription = null,

@@ -18,8 +18,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -123,7 +121,7 @@ fun AccountSettingsScreen(
                                         contentScale = ContentScale.Crop,
                                         modifier = Modifier
                                             .size(40.dp)
-                                            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else CircleShape)
+                                            .clip(CircleShape)
                                     )
                                     Spacer(modifier = Modifier.width(12.dp))
                                 }
@@ -139,7 +137,7 @@ fun AccountSettingsScreen(
                                 onClick = {
                                     showLogoutDialog = true
                                 },
-                                shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.outlinedShape,
+                                shape = ButtonDefaults.outlinedShape,
                                 colors = ButtonDefaults.outlinedButtonColors(
                                     containerColor = MaterialTheme.colorScheme.surfaceContainer,
                                     contentColor = MaterialTheme.colorScheme.onSurface
@@ -368,7 +366,7 @@ fun AccountSettingsScreen(
                                 showLogoutDialog = false
                                 navController.navigateUp()
                             },
-                            shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.shape,
+                            shape = ButtonDefaults.shape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(stringResource(R.string.logout_keep_data))
@@ -379,7 +377,7 @@ fun AccountSettingsScreen(
                                 accountSettingsViewModel.logoutAndClearSyncedContent(context, onInnerTubeCookieChange)
                                 showLogoutDialog = false
                             },
-                            shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.filledTonalShape,
+                            shape = ButtonDefaults.filledTonalShape,
                             modifier = Modifier.fillMaxWidth(),
                             colors = ButtonDefaults.filledTonalButtonColors(contentColor = MaterialTheme.colorScheme.error)
                         ) {
@@ -388,7 +386,7 @@ fun AccountSettingsScreen(
 
                         TextButton(
                             onClick = { showLogoutDialog = false },
-                            shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else ButtonDefaults.textShape,
+                            shape = ButtonDefaults.textShape,
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text(stringResource(android.R.string.cancel))

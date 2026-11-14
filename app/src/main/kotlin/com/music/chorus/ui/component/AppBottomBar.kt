@@ -36,7 +36,6 @@ import pushkar.chorus.music.constants.FloatingToolbarHorizontalPadding
 import pushkar.chorus.music.constants.NavigationBarAnimationSpec
 import pushkar.chorus.music.constants.NavigationBarHeight
 import pushkar.chorus.music.ui.screens.Screens
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import pushkar.chorus.music.ui.utils.resetHeightOffset
 
 @Composable
@@ -58,7 +57,6 @@ fun AppBottomBar(
     modifier: Modifier = Modifier,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val isFluid = isFluidTheme()
     val baseBg = if (pureBlack) Color.Black else MaterialTheme.colorScheme.surfaceContainer
 
     val navigationBarHeight by animateDpAsState(
@@ -158,9 +156,9 @@ fun AppBottomBar(
                     .height(bottomInsetDp)
                     .graphicsLayer {
                         val progress = playerBottomSheetState.progress
-                        alpha = if (progress > 0f || !shouldShowNavigationBar || isFluid) 0f else 1f
+                        alpha = if (progress > 0f || !shouldShowNavigationBar) 0f else 1f
                     }
-                    .background(if (isFluid) Color.Transparent else baseBg)
+                    .background(baseBg)
             )
         }
     } else {

@@ -19,8 +19,6 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -217,14 +215,14 @@ fun YouTubeSongMenu(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .size(ListThumbnailSize)
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(ThumbnailCornerRadius))
+                    .clip(RoundedCornerShape(ThumbnailCornerRadius))
             ) {
                 AsyncImage(
                     model = song.thumbnail,
                     contentDescription = null,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(if (isFluidTheme()) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(ThumbnailCornerRadius))
+                        .clip(RoundedCornerShape(ThumbnailCornerRadius))
                 )
             }
         },

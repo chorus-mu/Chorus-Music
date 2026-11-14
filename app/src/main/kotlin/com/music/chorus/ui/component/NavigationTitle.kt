@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -79,7 +77,7 @@ fun NavigationTitle(
         onPlayAllClick?.let { playAllClick ->
             OutlinedButton(
                 onClick = playAllClick,
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else RoundedCornerShape(12.dp),
+                shape = RoundedCornerShape(12.dp),
                 border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)),
                 colors = ButtonDefaults.outlinedButtonColors(
                     contentColor = MaterialTheme.colorScheme.primary

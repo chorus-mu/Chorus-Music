@@ -140,8 +140,6 @@ import pushkar.chorus.music.constants.ShowArtistVideoKey
 import pushkar.chorus.music.constants.ShowArtistBackgroundVideoKey
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.ButtonDefaults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -744,7 +742,7 @@ fun ArtistScreen(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(horizontal = 16.dp, vertical = 16.dp)
-                                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp))
+                                    .clip(RoundedCornerShape(16.dp))
                                     .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f))
                                     .padding(16.dp)
                             ) {

@@ -15,10 +15,7 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.unit.dp
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-import pushkar.chorus.music.ui.theme.isFluidTheme
 
 @Composable
 fun PlayerSliderTrack(
@@ -27,12 +24,8 @@ fun PlayerSliderTrack(
     colors: SliderColors = SliderDefaults.colors(),
     trackHeight: Dp = 10.dp
 ) {
-    val isFluid = isFluidTheme()
-    val isDark = isSystemInDarkTheme()
-    val inactiveTrackColor = if (isFluid) {
-        if (isDark) Color(0x33FFFFFF) else Color(0x1F000000)
-    } else colors.inactiveTrackColor
-    val activeTrackColor = if (isFluid) FluidTheme.tint else colors.activeTrackColor
+    val inactiveTrackColor = colors.inactiveTrackColor
+    val activeTrackColor = colors.activeTrackColor
     val inactiveTickColor = colors.inactiveTickColor
     val activeTickColor = colors.activeTickColor
     val valueRange = sliderState.valueRange

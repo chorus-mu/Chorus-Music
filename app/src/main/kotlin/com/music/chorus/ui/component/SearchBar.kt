@@ -20,10 +20,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -83,15 +80,6 @@ fun TopSearch(
     focusRequester: FocusRequester = remember { FocusRequester() },
     content: @Composable ColumnScope.() -> Unit = {},
 ) {
-    val isFluid = isFluidTheme()
-    val isDark = isSystemInDarkTheme()
-    val effectiveColors = if (isFluid) {
-        TopAppBarDefaults.topAppBarColors(
-            containerColor = Color.Transparent,
-            scrolledContainerColor = Color.Transparent,
-        )
-    } else colors
-
     Box(modifier = modifier) {
         TopAppBar(
             title = {
@@ -107,12 +95,12 @@ fun TopSearch(
                     leadingIcon = null,
                     trailingIcon = null,
                     colors = TextFieldDefaults.colors(
-                        focusedTextColor = if (isFluid) FluidTheme.colors.label else MaterialTheme.colorScheme.onSurface,
-                        unfocusedTextColor = if (isFluid) FluidTheme.colors.secondaryLabel else MaterialTheme.colorScheme.onSurfaceVariant,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
                         focusedContainerColor = Color.Transparent,
                         unfocusedContainerColor = Color.Transparent,
                         disabledContainerColor = Color.Transparent,
-                        cursorColor = if (isFluid) FluidTheme.tint else MaterialTheme.colorScheme.primary,
+                        cursorColor = MaterialTheme.colorScheme.primary,
                         focusedIndicatorColor = Color.Transparent,
                         unfocusedIndicatorColor = Color.Transparent
                     ),
@@ -130,18 +118,17 @@ fun TopSearch(
                     trailingIcon()
                 }
             },
-            colors = effectiveColors,
+            colors = colors,
             scrollBehavior = scrollBehavior,
             windowInsets = windowInsets
         )
 
         if (active) {
-            val activeBg = if (isFluid) (if (isDark) Color(0xFF000000) else Color(0xFFF2F2F7)) else MaterialTheme.colorScheme.surface
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = AppBarHeight + windowInsets.asPaddingValues().calculateTopPadding())
-                    .background(activeBg)
+                    .background(MaterialTheme.colorScheme.surface)
             ) {
                 Column {
                     content()

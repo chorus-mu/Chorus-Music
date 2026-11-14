@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -36,36 +34,22 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import pushkar.chorus.music.R
 
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-
 @Composable
 fun OfflineModeCard(
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
-    val isFluid = isFluidTheme()
-    val shape = if (isFluid) ContinuousRoundedRectangle(24.dp) else RoundedCornerShape(24.dp)
+    val shape = RoundedCornerShape(24.dp)
 
     Card(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-            .then(
-                if (isFluid) {
-                    Modifier
-                        .clip(shape)
-                        .fluidGlass(
-                            shape = shape,
-                            intensity = GlassIntensity.Standard,
-                        )
-                } else Modifier
-            ),
+            .padding(horizontal = 16.dp, vertical = 12.dp),
         shape = shape,
         colors = CardDefaults.cardColors(
-            containerColor = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.secondaryContainer.copy(alpha = 0.5f)
         ),
-        border = if (isFluid) null else BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary.copy(alpha = 0.1f))
     ) {
         Column(
             modifier = Modifier
@@ -133,7 +117,7 @@ fun OfflineModeCard(
             ) {
                 Button(
                     onClick = { navController.navigate("local_songs") },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.primary,
                         contentColor = MaterialTheme.colorScheme.onPrimary
@@ -155,7 +139,7 @@ fun OfflineModeCard(
 
                 FilledTonalButton(
                     onClick = { navController.navigate(pushkar.chorus.music.ui.screens.Screens.Library.route) },
-                    shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = ButtonDefaults.filledTonalButtonColors(
                         containerColor = MaterialTheme.colorScheme.secondaryContainer,
                         contentColor = MaterialTheme.colorScheme.onSecondaryContainer

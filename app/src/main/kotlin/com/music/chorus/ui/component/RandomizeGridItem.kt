@@ -20,10 +20,6 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import pushkar.chorus.music.constants.ThumbnailCornerRadius
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 
 @Composable
 fun RandomizeGridItem(
@@ -44,17 +40,13 @@ fun RandomizeGridItem(
         label = "loadingAlpha"
     )
 
-    val isFluid = isFluidTheme()
-    val shape = if (isFluid) ContinuousRoundedRectangle(ThumbnailCornerRadius) else RoundedCornerShape(ThumbnailCornerRadius)
+    val shape = RoundedCornerShape(ThumbnailCornerRadius)
 
     Box(
         modifier = modifier
             .aspectRatio(1f)
             .clip(shape)
-            .then(
-                if (isFluid) Modifier.fluidGlass(shape = shape, intensity = GlassIntensity.Standard)
-                else Modifier.background(MaterialTheme.colorScheme.secondaryContainer)
-            )
+            .background(MaterialTheme.colorScheme.secondaryContainer)
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center
     ) {

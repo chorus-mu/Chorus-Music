@@ -13,8 +13,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -371,7 +369,7 @@ private fun SpotifyLoginSheet(
         modifier = Modifier.fillMaxHeight(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(topStart = 28.dp, topEnd = 28.dp) else RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
@@ -562,7 +560,7 @@ private fun SpotifySourcePickerSheet(
         modifier = Modifier.fillMaxHeight(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
-        shape = if (isFluidTheme()) ContinuousRoundedRectangle(topStart = 28.dp, topEnd = 28.dp) else RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
+        shape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp),
         containerColor = MaterialTheme.colorScheme.surface,
     ) {
         Column(
@@ -626,7 +624,7 @@ private fun SpotifySourcePickerSheet(
                 onClick = onImport,
                 modifier = Modifier.fillMaxWidth().heightIn(min = 52.dp),
                 enabled = state.canImport,
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(16.dp),
             ) {
                 Text(stringResource(R.string.spotify_import_selected))
             }
@@ -697,7 +695,7 @@ private fun SpotifySourceThumbnail(source: SpotifyImportSourceUi) {
     Box(
         modifier = Modifier
             .size(48.dp)
-            .clip(if (isFluidTheme()) ContinuousRoundedRectangle(12.dp) else MaterialTheme.shapes.medium)
+            .clip(MaterialTheme.shapes.medium)
             .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.12f)),
         contentAlignment = Alignment.Center,
     ) {

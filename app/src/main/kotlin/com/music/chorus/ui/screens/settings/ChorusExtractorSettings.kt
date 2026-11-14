@@ -16,8 +16,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -211,7 +209,7 @@ fun ChorusExtractorSettings(
                                     .size(30.dp)
                                     .background(
                                         color = statusContainerColor,
-                                        shape = if (isFluidTheme()) ContinuousRoundedRectangle(15.dp) else RoundedCornerShape(50)
+                                        shape = RoundedCornerShape(50)
                                     )
                             ) {
                                 Text(

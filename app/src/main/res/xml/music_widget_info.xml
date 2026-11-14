@@ -8,5 +8,5 @@
     android:previewLayout="@layout/widget_music_player_preview"
     android:initialLayout="@layout/widget_music_player"
     android:description="@string/widget_description"
-    android:widgetCategory="home_screen"
+    android:widgetCategory="home_screen|keyguard"
     android:resizeMode="horizontal|vertical" />

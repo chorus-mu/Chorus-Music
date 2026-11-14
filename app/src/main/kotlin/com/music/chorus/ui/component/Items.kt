@@ -41,9 +41,6 @@ import androidx.compose.foundation.border
 import androidx.compose.ui.unit.sp
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -150,40 +147,21 @@ inline fun ListItem(
     horizontalPadding: Dp = 16.dp,
     color: Color = MaterialTheme.colorScheme.surfaceContainer,
 ) {
-    val isFluid = pushkar.chorus.music.ui.theme.isFluidTheme()
-    val isDark = androidx.compose.foundation.isSystemInDarkTheme()
-    val itemShape = if (isFluid && shape is RoundedCornerShape) {
-        ContinuousRoundedRectangle(shape.topStart)
-    } else shape
-    val isHighlighted = isActive || (isSelected == true && drawHighlight)
-
-
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
-            .padding(vertical = if (isFluid) 0.5.dp else 2.dp)
+            .padding(vertical = 2.dp)
             .padding(horizontal = horizontalPadding)
-            .let { mod ->
-                if (isFluid) {
-                    mod.clip(itemShape).fluidGlass(
-                        shape = itemShape,
-                        intensity = if (isHighlighted) GlassIntensity.Prominent else GlassIntensity.Standard,
-                        surfaceColor = if (isHighlighted) pushkar.chorus.music.ui.fluid.foundation.FluidTheme.tint else Color.Unspecified,
-                        surfaceAlpha = if (isHighlighted) (if (isDark) 0.28f else 0.18f) else (if (isDark) 0.16f else 0.08f),
-                        applyEdgeEffects = itemShape != RectangleShape
-                    )
-                } else {
-                    mod.clip(itemShape).background(
-                        color = when {
-                            isActive -> MaterialTheme.colorScheme.secondaryContainer
-                            isSelected == true && drawHighlight -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-                            else -> color
-                        }
-                    )
+            .clip(shape)
+            .background(
+                color = when {
+                    isActive -> MaterialTheme.colorScheme.secondaryContainer
+                    isSelected == true && drawHighlight -> MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
+                    else -> color
                 }
-            }
+            )
             .then(modifier)
-            .height(if (isFluid) 58.dp else ListItemHeight)
+            .height(ListItemHeight)
     ) {
         Box(
             modifier = Modifier.padding(start = 12.dp, top = 6.dp, end = 6.dp, bottom = 6.dp),
@@ -1368,19 +1346,13 @@ fun ItemThumbnail(
     thumbnailRatio: Float = 1f
 ) {
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, true)
-    val isFluid = pushkar.chorus.music.ui.theme.isFluidTheme()
-    val effectiveShape = if (isFluid && shape is RoundedCornerShape) {
-        pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle(ThumbnailCornerRadius)
-    } else {
-        shape
-    }
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .fillMaxSize()
             .aspectRatio(thumbnailRatio)
-            .clip(effectiveShape)
+            .clip(shape)
     ) {
         if (albumIndex == null) {
             AsyncImage(
@@ -1394,7 +1366,7 @@ fun ItemThumbnail(
                 contentScale = if (cropAlbumArt) androidx.compose.ui.layout.ContentScale.Crop else androidx.compose.ui.layout.ContentScale.Fit,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(effectiveShape)
+                    .clip(shape)
             )
         }
 
@@ -1456,18 +1428,12 @@ fun LocalThumbnail(
     thumbnailRatio: Float = 1f
 ) {
     val cropAlbumArt by rememberPreference(CropAlbumArtKey, true)
-    val isFluid = pushkar.chorus.music.ui.theme.isFluidTheme()
-    val effectiveShape = if (isFluid && shape is RoundedCornerShape) {
-        pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle(ThumbnailCornerRadius)
-    } else {
-        shape
-    }
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = modifier
             .aspectRatio(thumbnailRatio)
-            .clip(effectiveShape)
+            .clip(shape)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -1490,7 +1456,7 @@ fun LocalThumbnail(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.4f), effectiveShape)
+                    .background(Color.Black.copy(alpha = 0.4f), shape)
             ) {
                 if (isPlaying) {
                     PlayingIndicator(

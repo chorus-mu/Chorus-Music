@@ -19,11 +19,10 @@ stateDiagram-v2
 ```
 
 ## Scenario Coverage Matrix
-1. **App Launch & Theme Switch**:
+1. **App Launch & Theme**:
    - Launch in Material UI -> verify Monet theme, bottom nav items.
-   - Switch to Fluid UI -> verify continuous squircle tabs, liquid glass backdrop, bounce indication.
 2. **Artist Full-Bleed Hero**:
-   - Open artist page -> pull down for parallax zoom, verify TopFadeBlur scrim, test Play/Shuffle/Follow buttons.
+   - Open artist page -> pull down for parallax zoom, test Play/Shuffle/Follow buttons.
 3. **Lyrics Synchronization**:
    - Open full player -> switch to Lyrics view -> verify syllable glow, word bounce float, translation line display.
 4. **AI DJ Set Builder**:
@@ -32,4 +31,3 @@ stateDiagram-v2
 ## Exit Criteria
 - Zero runtime crashes over 100 navigation cycles.
 - Zero unresolved syntax/lint errors in `:app:compileDebugKotlin`.
-- All dual theme assets correctly loaded across both UI engines.

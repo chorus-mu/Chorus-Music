@@ -74,12 +74,6 @@ import pushkar.chorus.music.R
 import pushkar.chorus.music.constants.InnerTubeCookieKey
 import pushkar.chorus.music.db.entities.PlaylistEntity
 import pushkar.chorus.music.extensions.isSyncEnabled
-import androidx.compose.foundation.border
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.LocalFluidColors
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import pushkar.chorus.music.utils.rememberPreference
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -90,7 +84,6 @@ import java.util.logging.Logger
 
 /**
  * Full-height playlist creation sheet with cover art picker, clearable title field, and YouTube sync option.
- * Fully compatible with both Material UI and Fluid UI without layout measurement crashes.
  */
 @Composable
 fun CreatePlaylistDialog(
@@ -102,8 +95,6 @@ fun CreatePlaylistDialog(
     val database = LocalDatabase.current
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
-    val isFluid = isFluidTheme()
-    val fluidColors = LocalFluidColors.current
 
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
     val isSignedIn = innerTubeCookie.isNotEmpty()
@@ -188,19 +179,11 @@ fun CreatePlaylistDialog(
     ) {
         BackHandler(onBack = ::close)
         val statusTop = WindowInsets.statusBars.asPaddingValues().calculateTopPadding()
-        val sheetColor = if (isFluid) {
-            if (fluidColors.isDark) fluidColors.secondarySystemGroupedBackground else fluidColors.systemBackground
-        } else {
-            MaterialTheme.colorScheme.surface
-        }
-        val labelColor = if (isFluid) fluidColors.label else MaterialTheme.colorScheme.onSurface
-        val secondaryLabelColor = if (isFluid) fluidColors.secondaryLabel else MaterialTheme.colorScheme.onSurfaceVariant
-        val accentColor = if (isFluid) fluidColors.accent else MaterialTheme.colorScheme.primary
-        val cornerShape = if (isFluid) {
-            ContinuousRoundedRectangle(topStart = 38.dp, topEnd = 38.dp, bottomEnd = 0.dp, bottomStart = 0.dp)
-        } else {
-            RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-        }
+        val sheetColor = MaterialTheme.colorScheme.surface
+        val labelColor = MaterialTheme.colorScheme.onSurface
+        val secondaryLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+        val accentColor = MaterialTheme.colorScheme.primary
+        val cornerShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
 
         BoxWithConstraints(
             Modifier
@@ -214,16 +197,7 @@ fun CreatePlaylistDialog(
                     .fillMaxSize()
                     .graphicsLayer { translationY = offset.value * travel }
                     .clip(cornerShape)
-                    .then(
-                        if (isFluid) {
-                            Modifier
-                                .fluidGlass(shape = cornerShape, intensity = GlassIntensity.Prominent)
-                                .background(if (fluidColors.isDark) Color(0x661C1C20) else Color(0x80FFFFFF))
-                                .border(1.dp, Color.White.copy(alpha = if (fluidColors.isDark) 0.15f else 0.4f), cornerShape)
-                        } else {
-                            Modifier.background(sheetColor)
-                        }
-                    )
+                    .background(sheetColor)
                     .imePadding(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
@@ -239,7 +213,7 @@ fun CreatePlaylistDialog(
                             .align(Alignment.CenterStart)
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(if (isFluid) fluidColors.tertiarySystemFill else MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.close),
@@ -264,7 +238,7 @@ fun CreatePlaylistDialog(
                             .align(Alignment.CenterEnd)
                             .size(44.dp)
                             .clip(CircleShape)
-                            .background(if (canSave) accentColor else if (isFluid) fluidColors.tertiarySystemFill else MaterialTheme.colorScheme.surfaceContainerHighest)
+                            .background(if (canSave) accentColor else MaterialTheme.colorScheme.surfaceContainerHighest)
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.check),
@@ -281,8 +255,8 @@ fun CreatePlaylistDialog(
                     modifier = Modifier
                         .padding(top = 16.dp)
                         .size(180.dp)
-                        .clip(if (isFluid) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp))
-                        .background(if (isFluid) fluidColors.tertiarySystemFill else MaterialTheme.colorScheme.surfaceContainerHighest)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceContainerHighest)
                         .clickable { pickCover.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)) },
                 ) {
                     if (cover != null) {
@@ -356,7 +330,7 @@ fun CreatePlaylistDialog(
                             .align(Alignment.BottomCenter)
                             .fillMaxWidth()
                             .height(1.dp)
-                            .background(if (isFluid) fluidColors.separator else MaterialTheme.colorScheme.outlineVariant),
+                            .background(MaterialTheme.colorScheme.outlineVariant),
                     )
                 }
 

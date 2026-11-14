@@ -55,7 +55,7 @@ class CoilBitmapLoader(
         scope.future(Dispatchers.IO) {
             val request = ImageRequest.Builder(context)
                 .data(uri)
-                .size(512)
+                .size(1080)
                 .allowHardware(false)
                 .build()
 

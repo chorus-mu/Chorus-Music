@@ -9,5 +9,5 @@
     android:previewLayout="@layout/widget_compact_wide"
     android:initialLayout="@layout/widget_compact_wide"
     android:description="@string/widget_description"
-    android:widgetCategory="home_screen"
+    android:widgetCategory="home_screen|keyguard"
     android:resizeMode="horizontal" />

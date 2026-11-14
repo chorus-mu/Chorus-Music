@@ -11,12 +11,7 @@ import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -142,40 +137,22 @@ fun MoodAndGenresButton(
     val backgroundColor = androidx.compose.runtime.remember(title) {
         colors[kotlin.math.abs(title.hashCode()) % colors.size]
     }
-    val isFluid = isFluidTheme()
-    val isDark = isSystemInDarkTheme()
-    val shape = if (isFluid) ContinuousRoundedRectangle(14.dp) else RoundedCornerShape(6.dp)
+    val shape = RoundedCornerShape(6.dp)
 
-    val buttonModifier = if (isFluid) {
-        modifier
-            .height(MoodAndGenresButtonHeight)
-            .clip(shape)
-            .fluidGlass(
-                shape = shape,
-                intensity = GlassIntensity.Standard,
-                surfaceColor = backgroundColor,
-                surfaceAlpha = if (isDark) 0.35f else 0.20f
-            )
-            .clickable(onClick = onClick)
-            .padding(horizontal = 14.dp)
-    } else {
-        modifier
+    Box(
+        contentAlignment = Alignment.CenterStart,
+        modifier = modifier
             .height(MoodAndGenresButtonHeight)
             .clip(shape)
             .background(backgroundColor)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp)
-    }
-
-    Box(
-        contentAlignment = Alignment.CenterStart,
-        modifier = buttonModifier,
+            .padding(horizontal = 12.dp),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelLarge,
-            fontWeight = if (isFluid) FontWeight.SemiBold else FontWeight.Normal,
-            color = if (isFluid && !isDark) Color(0xFF141416) else Color.White,
+            fontWeight = FontWeight.Normal,
+            color = Color.White,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
         )

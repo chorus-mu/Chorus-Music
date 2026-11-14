@@ -243,6 +243,8 @@ class MusicService :
     @Inject
     lateinit var widgetManager: ChorusMusicWidgetManager
 
+    private var lockscreenPlayerManager: LockscreenPlayerManager? = null
+
     private lateinit var audioManager: AudioManager
     private var wifiLock: android.net.wifi.WifiManager.WifiLock? = null
     private var audioFocusRequest: AudioFocusRequest? = null
@@ -599,6 +601,10 @@ class MusicService :
         player.addListener(sleepTimer)
         playerInitialized.value = true
         Timber.tag(TAG).d("Player successfully initialized")
+
+        lockscreenPlayerManager = LockscreenPlayerManager(this, scope).apply {
+            start()
+        }
 
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
         abandonAudioFocus()
@@ -2139,12 +2145,14 @@ class MusicService :
                 closeAudioEffectSession()
             }
         }
+
         if (events.containsAny(EVENT_TIMELINE_CHANGED, EVENT_POSITION_DISCONTINUITY)) {
             currentMediaMetadata.value = player.currentMetadata
         }
 
         if (events.containsAny(Player.EVENT_IS_PLAYING_CHANGED)) {
             updateWidgetUI(player.isPlaying)
+            lockscreenPlayerManager?.onPlaybackStateChanged(player.isPlaying)
             if (player.isPlaying) {
                 startWidgetUpdates()
                 acquireWifiLock()
@@ -2161,6 +2169,10 @@ class MusicService :
                     DiscordPresenceManager.stop()
                 }
             }
+        }
+
+        if (events.containsAny(Player.EVENT_MEDIA_ITEM_TRANSITION)) {
+            currentMediaMetadata.value = player.currentMetadata
         }
 
         if (events.containsAny(
@@ -3185,6 +3197,8 @@ class MusicService :
     override fun onDestroy() {
         isRunning = false
         releasePrebuffered()
+        lockscreenPlayerManager?.stop()
+        lockscreenPlayerManager = null
 
         try {
             unregisterReceiver(screenStateReceiver)

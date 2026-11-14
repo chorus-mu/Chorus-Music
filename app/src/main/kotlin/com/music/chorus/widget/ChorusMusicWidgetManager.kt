@@ -21,6 +21,7 @@ import coil3.toBitmap
 import pushkar.chorus.music.MainActivity
 import pushkar.chorus.music.R
 import pushkar.chorus.music.db.MusicDatabase
+import pushkar.chorus.music.utils.makeTimeString
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -173,10 +174,14 @@ class ChorusMusicWidgetManager @Inject constructor(
         views.setImageViewResource(R.id.widget_like_button, likeIcon)
 
         if (duration > 0) {
-            val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt()
+            val level = ((currentPosition.toDouble() / duration.toDouble()) * 10000).toInt().coerceIn(0, 10000)
             views.setInt(R.id.widget_progress_fill, "setImageLevel", level)
+            views.setTextViewText(R.id.widget_time_elapsed, makeTimeString(currentPosition))
+            views.setTextViewText(R.id.widget_time_total, makeTimeString(duration))
         } else {
             views.setInt(R.id.widget_progress_fill, "setImageLevel", 0)
+            views.setTextViewText(R.id.widget_time_elapsed, "0:00")
+            views.setTextViewText(R.id.widget_time_total, "0:00")
         }
 
         views.setOnClickPendingIntent(R.id.widget_album_art, getOpenAppIntent())

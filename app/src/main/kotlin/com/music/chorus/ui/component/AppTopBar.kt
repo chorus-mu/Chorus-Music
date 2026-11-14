@@ -52,12 +52,7 @@ import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import pushkar.chorus.music.R
 import pushkar.chorus.music.constants.NavigationBarHeight
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.fluid.foundation.FluidTheme
-import pushkar.chorus.music.ui.fluid.foundation.GlassIntensity
-import pushkar.chorus.music.ui.fluid.foundation.fluidGlass
 import pushkar.chorus.music.ui.screens.Screens
-import pushkar.chorus.music.ui.theme.isFluidTheme
 
 @Composable
 fun AppTopBar(
@@ -76,23 +71,15 @@ fun AppTopBar(
     onCreatePlaylistClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isFluid = isFluidTheme()
     val isDark = androidx.compose.foundation.isSystemInDarkTheme()
     var showLibraryMenu by remember { mutableStateOf(false) }
 
     CenterAlignedTopAppBar(
         title = {
-            val titleStyle = if (isFluid) {
-                FluidTheme.typography.title1.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 24.sp
-                )
-            } else {
-                MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 22.sp
-                )
-            }
+            val titleStyle = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp
+            )
             Text(
                 text = title,
                 style = titleStyle,
@@ -145,9 +132,8 @@ fun AppTopBar(
                         DropdownMenu(
                             expanded = showLibraryMenu,
                             onDismissRequest = { showLibraryMenu = false },
-                            shape = if (isFluid) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(16.dp),
-                            containerColor = if (isFluid) Color.Transparent else MaterialTheme.colorScheme.surfaceContainerHigh,
-                            modifier = if (isFluid) Modifier.fluidGlass(intensity = GlassIntensity.Prominent) else Modifier
+                            shape = RoundedCornerShape(16.dp),
+                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
                         ) {
                             DropdownMenuItem(
                                 text = { Text(stringResource(R.string.create_playlist)) },
@@ -222,9 +208,9 @@ fun AppTopBar(
         colors = TopAppBarDefaults.topAppBarColors(
             containerColor = Color.Transparent,
             scrolledContainerColor = Color.Transparent,
-            titleContentColor = if (isFluid) FluidTheme.colors.label else MaterialTheme.colorScheme.onSurface,
-            actionIconContentColor = if (isFluid) FluidTheme.colors.label else MaterialTheme.colorScheme.onSurface,
-            navigationIconContentColor = if (isFluid) FluidTheme.colors.label else MaterialTheme.colorScheme.onSurface
+            titleContentColor = MaterialTheme.colorScheme.onSurface,
+            actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+            navigationIconContentColor = MaterialTheme.colorScheme.onSurface
         ),
         windowInsets = WindowInsets.systemBars.only(WindowInsetsSides.Top),
         modifier = modifier

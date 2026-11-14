@@ -62,6 +62,7 @@ constructor(
                                     suggestions =
                                     result
                                         ?.queries
+                                        ?.distinct()
                                         ?.filter { suggestionQuery ->
                                             history.none { it.query == suggestionQuery }
                                         }.orEmpty(),

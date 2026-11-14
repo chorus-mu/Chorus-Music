@@ -30,8 +30,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.foundation.shape.RoundedCornerShape
-import pushkar.chorus.music.ui.component.shapes.ContinuousRoundedRectangle
-import pushkar.chorus.music.ui.theme.isFluidTheme
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Icon
@@ -638,7 +636,7 @@ private fun AutoPlaylistHeader(
                         if (LocalConfiguration.current.screenWidthDp > 600) Modifier.size(300.dp)
                         else Modifier.fillMaxWidth().aspectRatio(1f)
                     )
-                    .clip(if (isFluidTheme()) ContinuousRoundedRectangle(16.dp) else RoundedCornerShape(8.dp)),
+                    .clip(RoundedCornerShape(8.dp)),
                 contentScale = androidx.compose.ui.layout.ContentScale.Crop
             )
         }
@@ -681,7 +679,7 @@ private fun AutoPlaylistHeader(
                         ),
                     )
                 },
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else androidx.compose.material3.ButtonDefaults.shape,
+                shape = androidx.compose.material3.ButtonDefaults.shape,
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant,
                     contentColor = MaterialTheme.colorScheme.onSurfaceVariant
@@ -720,7 +718,7 @@ private fun AutoPlaylistHeader(
                         ),
                     )
                 },
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else androidx.compose.material3.ButtonDefaults.shape,
+                shape = androidx.compose.material3.ButtonDefaults.shape,
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
                     containerColor = MaterialTheme.colorScheme.primary,
                     contentColor = MaterialTheme.colorScheme.onPrimary
@@ -792,7 +790,7 @@ private fun AutoPlaylistHeader(
                         )
                     }
                 },
-                shape = if (isFluidTheme()) ContinuousRoundedRectangle(24.dp) else androidx.compose.foundation.shape.CircleShape,
+                shape = androidx.compose.foundation.shape.CircleShape,
                 color = MaterialTheme.colorScheme.surfaceVariant,
                 modifier = Modifier.size(48.dp)
             ) {

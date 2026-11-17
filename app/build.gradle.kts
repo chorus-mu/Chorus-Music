@@ -346,3 +346,12 @@ configurations.all {
     }
 }
 
+tasks.register<Copy>("copyChangelogToAssets") {
+    from(rootProject.file("changelog.json"))
+    into(file("src/main/assets"))
+}
+
+tasks.named("preBuild") {
+    dependsOn("copyChangelogToAssets")
+}
+

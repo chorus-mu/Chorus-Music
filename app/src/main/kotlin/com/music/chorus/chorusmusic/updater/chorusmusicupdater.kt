@@ -708,42 +708,75 @@ suspend fun checkForUpdate(
                         changelogList.add(ChangelogSection(title, itemsList))
                     }
                 } catch (e: Exception) {
-                    var body = if (targetRelease.isNull("body")) {
-                        context.getString(R.string.no_changelog_available)
-                    } else {
-                        targetRelease.optString("body", context.getString(R.string.no_changelog_available)).let {
-                            if (it == "null" || it.isBlank()) context.getString(R.string.no_changelog_available) else it
-                        }
-                    }
+                    val localJson = try {
+                        context.assets.open("changelog.json").bufferedReader().use { it.readText() }
+                    } catch (_: Exception) { null }
 
-                    val imageRegex = Regex("!\\[(.*?)\\]\\((.*?)\\)")
-                    val match = imageRegex.find(body)
-                    if (match != null) {
-                        imageUrl = match.groupValues[2]
-                        body = body.replace(match.value, "").trim()
-                    }
-
-                    val items = mutableListOf<String>()
-                    val remainingDescriptionLines = mutableListOf<String>()
-
-                    body.lines().forEach { line ->
-                        val trimmed = line.trim()
-                        if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
-                            val cleanItem = trimmed.substring(2).trim()
-                            if (cleanItem.isNotEmpty()) {
-                                items.add(cleanItem)
+                    if (localJson != null) {
+                        try {
+                            val changelogData = JSONObject(localJson)
+                            description = changelogData.optString("description").takeIf { it.isNotEmpty() }
+                            imageUrl = changelogData.optString("image").takeIf { it.isNotEmpty() }
+                            val changelogArray = changelogData.optJSONArray("changelog")
+                            if (changelogArray != null) {
+                                for (j in 0 until changelogArray.length()) {
+                                    val sectionObj = changelogArray.getJSONObject(j)
+                                    val title = sectionObj.getString("title")
+                                    val itemsArray = sectionObj.getJSONArray("items")
+                                    val itemsList = mutableListOf<String>()
+                                    for (k in 0 until itemsArray.length()) {
+                                        val rawItem = itemsArray.getString(k).trim()
+                                        val cleanItem = if (rawItem.startsWith("* ") || rawItem.startsWith("- ")) {
+                                            rawItem.substring(2).trim()
+                                        } else {
+                                            rawItem
+                                        }
+                                        itemsList.add(cleanItem)
+                                    }
+                                    changelogList.add(ChangelogSection(title, itemsList))
+                                }
                             }
-                        } else if (trimmed.isNotEmpty()) {
-                            remainingDescriptionLines.add(line)
+                        } catch (_: Exception) {}
+                    }
+
+                    if (changelogList.isEmpty()) {
+                        var body = if (targetRelease.isNull("body")) {
+                            context.getString(R.string.no_changelog_available)
+                        } else {
+                            targetRelease.optString("body", context.getString(R.string.no_changelog_available)).let {
+                                if (it == "null" || it.isBlank()) context.getString(R.string.no_changelog_available) else it
+                            }
                         }
-                    }
 
-                    if (items.isNotEmpty()) {
-                        changelogList.add(ChangelogSection("What's New", items))
-                    }
+                        val imageRegex = Regex("!\\[(.*?)\\]\\((.*?)\\)")
+                        val match = imageRegex.find(body)
+                        if (match != null) {
+                            imageUrl = match.groupValues[2]
+                            body = body.replace(match.value, "").trim()
+                        }
 
-                    val parsedDescription = remainingDescriptionLines.joinToString("\n").trim()
-                    description = parsedDescription.takeIf { it.isNotEmpty() }
+                        val items = mutableListOf<String>()
+                        val remainingDescriptionLines = mutableListOf<String>()
+
+                        body.lines().forEach { line ->
+                            val trimmed = line.trim()
+                            if (trimmed.startsWith("* ") || trimmed.startsWith("- ")) {
+                                val cleanItem = trimmed.substring(2).trim()
+                                if (cleanItem.isNotEmpty()) {
+                                    items.add(cleanItem)
+                                }
+                            } else if (trimmed.isNotEmpty()) {
+                                remainingDescriptionLines.add(line)
+                            }
+                        }
+
+                        if (items.isNotEmpty()) {
+                            changelogList.add(ChangelogSection("What's New", items))
+                        }
+
+                        val parsedDescription = remainingDescriptionLines.joinToString("\n").trim()
+                        description = parsedDescription.takeIf { it.isNotEmpty() }
+                    }
                 }
 
                 val publishedAt = targetRelease.getString("published_at")

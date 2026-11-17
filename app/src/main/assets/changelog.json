@@ -1,0 +1,30 @@
+{
+  "description": "Welcome to Chorus Music v1.2.2! This release introduces the all-new Adaptive Lock Screen Player (Beta) with universal biometric hardware support, dynamic album art theme backgrounds, background playback wakeups, and lifecycle optimizations.",
+  "image": "",
+  "changelog": [
+    {
+      "title": "New Features & Improvements",
+      "items": [
+        "Lock Screen Player (Beta): Show Chorus playback directly over your phone's lock screen with native Keyguard integration",
+        "Universal Biometric Replica: Automatically adapts to your phone's biometric setup (in-display optical/ultrasonic scanner, side-mounted sensor, or face unlock) with zero fake overlays",
+        "Nothing OS & OEM Replica: Displays the exact circular biometric scanner ring matching your phone and triggers real physical hardware sensor illumination",
+        "Dynamic Album Theme: Replaces the wallpaper with a rich ambient gradient sampled from the current track's album art across both Card and Immersive modes",
+        "Dual Visual Styles: Choose between elevated 'Card' mode with live seekbar & controls or full-bleed 'Immersive' mode with frosted blur vignettes",
+        "Notification Shade Access: Pulldown gestures from the top half of the screen seamlessly open the Android SystemUI notification drawer and quick settings",
+        "Reliable Background Wake: Seamlessly opens over the lock screen on screen turn-on even when Chorus is running only in the background",
+        "Appearance Settings: Added a 'BETA' badge and an instant one-tap 'Display over other apps' overlay permission helper"
+      ]
+    },
+    {
+      "title": "Bug Fixes & Refinements",
+      "items": [
+        "Card Player Overlap: Fixed layout issue where controls were overlying or touching the player card",
+        "Immersive Haziness: Eliminated background haziness with top and bottom frosted blur vignettes",
+        "Strict Recents Cleanup: Lockscreen player automatically dismisses immediately when the app is removed from Recent Apps",
+        "Playback Dismiss: Automatically closes the lock screen player when songs are removed from the player or playback stops",
+        "Screen Sleep / Lock: Fixed screen timeout and lock timing when turning screen off",
+        "Thumbnail Corner Radius: Fixed missing preview asset in the corner radius selector dialog"
+      ]
+    }
+  ]
+}

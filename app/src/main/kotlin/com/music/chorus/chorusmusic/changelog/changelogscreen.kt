@@ -199,15 +199,40 @@ fun ChangelogScreen(
                             showingCached = false
                         }
                     } else {
-                        Log.e("ChangelogScreen", "HTTP Error ${connection.responseCode} for $tag")
-                        withContext(Dispatchers.Main) { hasError = true; isLoading = false }
+                        Log.e("ChangelogScreen", "HTTP Error ${connection.responseCode} for $tag, trying local assets fallback")
+                        val loadedFromAssets = tryLoadFromAssets(context, tag)
+                        withContext(Dispatchers.Main) {
+                            if (loadedFromAssets != null) {
+                                changelogSections = loadedFromAssets.first
+                                updateImage = loadedFromAssets.second
+                                updateDescription = loadedFromAssets.third
+                                updateWarning = null
+                                isLoading = false
+                                hasError = false
+                                showingCached = false
+                            } else {
+                                hasError = true
+                                isLoading = false
+                            }
+                        }
                     }
                 }
             } catch (e: Exception) {
-                Log.e("ChangelogScreen", "Error fetching changelog: ${e.message}")
+                Log.e("ChangelogScreen", "Error fetching changelog: ${e.message}, trying local assets fallback")
+                val loadedFromAssets = tryLoadFromAssets(context, tag)
                 withContext(Dispatchers.Main) {
-                    hasError = true
-                    isLoading = false
+                    if (loadedFromAssets != null) {
+                        changelogSections = loadedFromAssets.first
+                        updateImage = loadedFromAssets.second
+                        updateDescription = loadedFromAssets.third
+                        updateWarning = null
+                        isLoading = false
+                        hasError = false
+                        showingCached = false
+                    } else {
+                        hasError = true
+                        isLoading = false
+                    }
                 }
             }
         }
@@ -537,4 +562,41 @@ private fun loadChangelogFromCache(context: Context, versionTag: String): Cached
             warning = cacheData.optString("warning").takeIf { it.isNotEmpty() }
         )
     } catch (e: Exception) { null }
+}
+
+private fun tryLoadFromAssets(context: Context, tag: String): Triple<List<ChangelogSection>, String?, String?>? {
+    return try {
+        val assetJson = context.assets.open("changelog.json").bufferedReader().use { it.readText() }
+        val changelogData = JSONObject(assetJson)
+        val desc = changelogData.optString("description").takeIf { it.isNotEmpty() }
+        val imageUrl = changelogData.optString("image").takeIf { it.isNotEmpty() }
+        val warning = changelogData.optString("warning").takeIf { it.isNotEmpty() }
+        val changelogArray = changelogData.optJSONArray("changelog")
+
+        val sections = mutableListOf<ChangelogSection>()
+        if (changelogArray != null) {
+            for (i in 0 until changelogArray.length()) {
+                val sectionObj = changelogArray.optJSONObject(i)
+                if (sectionObj != null) {
+                    val title = sectionObj.optString("title", "")
+                    val itemsArray = sectionObj.optJSONArray("items")
+                    val items = mutableListOf<String>()
+                    if (itemsArray != null) {
+                        for (j in 0 until itemsArray.length()) {
+                            items.add(itemsArray.getString(j))
+                        }
+                    }
+                    if (title.isNotBlank() || items.isNotEmpty()) {
+                        sections.add(ChangelogSection(title, items))
+                    }
+                }
+            }
+        }
+        if (sections.isNotEmpty()) {
+            saveChangelogToCache(context, tag, sections, imageUrl, desc, warning)
+            Triple(sections, imageUrl, desc)
+        } else null
+    } catch (_: Exception) {
+        null
+    }
 }

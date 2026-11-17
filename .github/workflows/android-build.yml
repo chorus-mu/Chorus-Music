@@ -58,11 +58,27 @@ jobs:
         VERSION_NAME=$(grep -oP 'versionName\s*=\s*"\K[^"]+' app/build.gradle.kts)
         echo "version=$VERSION_NAME" >> $GITHUB_OUTPUT
 
+    - name: Generate Release Notes from changelog.json
+      run: |
+        python3 -c "
+        import json
+        with open('changelog.json', 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        with open('RELEASE_NOTES.md', 'w', encoding='utf-8') as out:
+            out.write(data.get('description', '') + '\n\n')
+            for sec in data.get('changelog', []):
+                out.write('### ' + sec.get('title', '') + '\n')
+                for item in sec.get('items', []):
+                    out.write('- ' + item + '\n')
+                out.write('\n')
+        "
+
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v2
       with:
         tag_name: "v${{ steps.get_version.outputs.version }}"
         name: "Chorus Music - v${{ steps.get_version.outputs.version }}"
+        body_path: RELEASE_NOTES.md
         files: |
           app/build/outputs/apk/release/Chorus-Music.apk
           changelog.json

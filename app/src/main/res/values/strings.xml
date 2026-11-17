@@ -17,6 +17,8 @@
     <string name="account">Account</string>
     <string name="quick_picks">Quick picks</string>
     <string name="quick_picks_empty">Listen to songs to generate your quick picks</string>
+    <string name="auto_slide_quick_picks">Auto-slide Quick Picks</string>
+    <string name="auto_slide_quick_picks_desc">Automatically cycle through Quick Picks on the home screen</string>
     <string name="forgotten_favorites">Forgotten favorites</string>
     <string name="keep_listening">Keep listening</string>
     <string name="your_youtube_playlists">Your YouTube playlists</string>

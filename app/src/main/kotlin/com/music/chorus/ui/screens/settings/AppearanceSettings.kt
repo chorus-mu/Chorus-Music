@@ -3,12 +3,16 @@ package pushkar.chorus.music.ui.screens.settings
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.core.content.edit
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,6 +37,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -1382,8 +1387,27 @@ fun AppearanceSettings(
                 Material3SettingsItem(
                     isHighlighted = (highlightKey == "Lock screen player"),
                     icon = painterResource(R.drawable.lock),
-                    title = { Text("Lock screen player") },
-                    description = { Text("Show Chorus player over the lock screen during playback") },
+                    title = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text("Lock screen player")
+                            Box(
+                                modifier = Modifier
+                                    .clip(RoundedCornerShape(6.dp))
+                                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.18f))
+                                    .padding(horizontal = 6.dp, vertical = 2.dp)
+                            ) {
+                                Text(
+                                    text = "BETA",
+                                    style = MaterialTheme.typography.labelSmall.copy(fontWeight = FontWeight.Bold),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        }
+                    },
+                    description = { Text("Show Chorus player over the lock screen during playback (Beta)") },
                     trailingContent = {
                         Switch(
                             checked = lockscreenPlayerEnabled,
@@ -1401,6 +1425,20 @@ fun AppearanceSettings(
                     },
                     onClick = { onLockscreenPlayerEnabledChange(!lockscreenPlayerEnabled) }
                 ),
+                if (lockscreenPlayerEnabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !Settings.canDrawOverlays(context)) Material3SettingsItem(
+                    icon = painterResource(R.drawable.warning),
+                    title = { Text("Overlay Permission (Required for background)") },
+                    description = { Text("Allow 'Display over other apps' so the lock screen player can show while Chorus plays in the background") },
+                    onClick = {
+                        try {
+                            val intent = Intent(
+                                Settings.ACTION_MANAGE_OVERLAY_PERMISSION,
+                                Uri.parse("package:${context.packageName}")
+                            )
+                            context.startActivity(intent)
+                        } catch (_: Exception) {}
+                    }
+                ) else null,
                 if (lockscreenPlayerEnabled) Material3SettingsItem(
                     isHighlighted = (highlightKey == "Lock screen player style"),
                     icon = painterResource(R.drawable.palette),

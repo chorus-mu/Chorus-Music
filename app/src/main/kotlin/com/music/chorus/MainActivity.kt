@@ -304,12 +304,22 @@ class MainActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (dataStore.get(StopMusicOnTaskClearKey, true) &&
-            playerConnection?.isPlaying?.value == true &&
-            isFinishing
-        ) {
-            stopService(Intent(this, MusicService::class.java))
-            unbindService(serviceConnection)
+        if (isFinishing) {
+            try {
+                sendBroadcast(Intent(pushkar.chorus.music.ui.screens.lockscreen.LockscreenActivity.ACTION_DISMISS).setPackage(packageName))
+                val nm = getSystemService(android.app.NotificationManager::class.java)
+                nm?.cancel(pushkar.chorus.music.playback.LockscreenPlayerManager.LOCKSCREEN_NOTIFICATION_ID)
+            } catch (_: Exception) {}
+        }
+        if (isFinishing && dataStore.get(StopMusicOnTaskClearKey, true)) {
+            try {
+                stopService(Intent(this, MusicService::class.java))
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to stop MusicService on onDestroy")
+            }
+            try {
+                unbindService(serviceConnection)
+            } catch (_: Exception) {}
             playerConnection = null
         }
     }

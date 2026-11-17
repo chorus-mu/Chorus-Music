@@ -48,6 +48,7 @@
 *   **AI Translations:** Auto-translate non-native lyrics in real time using built-in translation models.
 
 ### 🎨 Premium Customization
+*   **Adaptive Lock Screen Player (Beta):** Show Chorus player directly over your phone's lock screen with universal biometric hardware adaptation, dynamic album artwork theme backgrounds, dual visual styles (Card & Immersive), and SystemUI notification access.
 *   **Dynamic Canvas Visualizations:** Immersive background animations matching the album art.
 *   **UI Density Scaling:** Customize spacing to fit any screen resolution perfectly.
 *   **High Refresh Rate Support:** Smooth scrolling and transitions at up to 120Hz+.

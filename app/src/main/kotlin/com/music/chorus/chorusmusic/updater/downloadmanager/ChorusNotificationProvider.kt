@@ -19,6 +19,7 @@ class ChorusNotificationProvider(
     notificationIdProvider: DefaultMediaNotificationProvider.NotificationIdProvider,
     private val channelId: String,
     channelNameResourceId: Int,
+    private val isLockscreenPlayerEnabled: () -> Boolean = { true },
 ) : MediaNotification.Provider {
 
     private val defaultProvider = DefaultMediaNotificationProvider(
@@ -58,7 +59,16 @@ class ChorusNotificationProvider(
             notification.flags = notification.flags and Notification.FLAG_ONGOING_EVENT.inv()
         }
 
-        notification.visibility = Notification.VISIBILITY_PUBLIC
+        // Lockscreen player visibility:
+        // When custom lockscreen player is enabled, set to VISIBILITY_SECRET so Android SystemUI
+        // does NOT display a duplicate system media player notification on the lock screen ("double player").
+        // When disabled, set to VISIBILITY_PUBLIC so the native system lock screen media card displays normally.
+        val lockscreenEnabled = isLockscreenPlayerEnabled()
+        notification.visibility = if (lockscreenEnabled) {
+            Notification.VISIBILITY_SECRET
+        } else {
+            Notification.VISIBILITY_PUBLIC
+        }
 
         return MediaNotification(mediaNotification.notificationId, notification)
     }

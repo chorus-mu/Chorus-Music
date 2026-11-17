@@ -44,6 +44,8 @@ fun getAllSearchableSettings(): List<Triple<String, String, String>> {
             Triple(stringResource(R.string.app_language), "Content", "settings/content"),
             Triple(stringResource(R.string.app_update_uptodate), "System Update", "settings/update"),
             Triple(stringResource(R.string.app_updates_title), "System Update", "settings/update"),
+            Triple(stringResource(R.string.auto_slide_quick_picks), "Content", "settings/content"),
+            Triple(stringResource(R.string.auto_slide_quick_picks_desc), "Content", "settings/content"),
             Triple(stringResource(R.string.appearance), "Appearance", "settings/appearance"),
             Triple(stringResource(R.string.apple_music), "Appearance", "settings/appearance"),
             Triple(stringResource(R.string.apple_music_lyrics_blur), "Appearance", "settings/appearance"),

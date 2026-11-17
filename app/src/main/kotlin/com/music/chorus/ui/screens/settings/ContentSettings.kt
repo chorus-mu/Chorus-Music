@@ -77,6 +77,7 @@ import pushkar.chorus.music.constants.HideYoutubeShortsKey
 import pushkar.chorus.music.constants.SponsorBlockEnabledKey
 import pushkar.chorus.music.constants.AlbumCanvasEnabledKey
 import pushkar.chorus.music.constants.LanguageCodeToName
+import pushkar.chorus.music.constants.AutoSlideQuickPicksKey
 import pushkar.chorus.music.constants.LyricsProviderOrderKey
 import pushkar.chorus.music.constants.ProxyEnabledKey
 import pushkar.chorus.music.constants.ProxyPasswordKey
@@ -157,6 +158,7 @@ highlightKey: String? = null) {
     )
     val (lengthTop, onLengthTopChange) = rememberPreference(key = TopSize, defaultValue = "50")
     val (quickPicks, onQuickPicksChange) = rememberEnumPreference(key = QuickPicksKey, defaultValue = QuickPicks.QUICK_PICKS)
+    val (autoSlideQuickPicks, onAutoSlideQuickPicksChange) = rememberPreference(key = AutoSlideQuickPicksKey, defaultValue = true)
     val (showSpeedDial, onShowSpeedDialChange) = rememberPreference(key = ShowSpeedDialKey, defaultValue = true)
     val (randomizeHomeOrder, onRandomizeHomeOrderChange) = rememberPreference(
         RandomizeHomeOrderKey,
@@ -1161,6 +1163,23 @@ highlightKey: String? = null) {
                         )
                     },
                     onClick = { showQuickPicksDialog = true }
+                ),
+                Material3SettingsItem(
+                    isHighlighted = (highlightKey == stringResource(R.string.auto_slide_quick_picks)),
+                    icon = painterResource(R.drawable.auto_play),
+                    title = { Text(stringResource(R.string.auto_slide_quick_picks)) },
+                    description = { Text(stringResource(R.string.auto_slide_quick_picks_desc)) },
+                    trailingContent = {
+                        Switch(
+                            checked = autoSlideQuickPicks,
+                            onCheckedChange = { onAutoSlideQuickPicksChange(it) },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+                                checkedTrackColor = MaterialTheme.colorScheme.primary
+                            )
+                        )
+                    },
+                    onClick = { onAutoSlideQuickPicksChange(!autoSlideQuickPicks) }
                 ),
                 Material3SettingsItem(
     isHighlighted = (highlightKey == "Speed Dial"),

@@ -66,12 +66,14 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionToken
+import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.music.innertube.YouTube
 import com.music.innertube.models.SongItem
 import com.music.innertube.models.WatchEndpoint
 import pushkar.chorus.music.MainActivity
 import pushkar.chorus.music.R
+import pushkar.chorus.music.ui.screens.lockscreen.LockscreenActivity
 import pushkar.chorus.music.constants.AudioNormalizationKey
 import pushkar.chorus.music.constants.AudioOffload
 import pushkar.chorus.music.constants.AudioQualityKey
@@ -244,6 +246,8 @@ class MusicService :
     lateinit var widgetManager: ChorusMusicWidgetManager
 
     private var lockscreenPlayerManager: LockscreenPlayerManager? = null
+    private var internalControllerFuture: ListenableFuture<MediaController>? = null
+    private var isMediaSessionReleased = false
 
     private lateinit var audioManager: AudioManager
     private var wifiLock: android.net.wifi.WifiManager.WifiLock? = null
@@ -589,7 +593,8 @@ class MusicService :
                 this,
                 { NOTIFICATION_ID },
                 CHANNEL_ID,
-                R.string.music_player
+                R.string.music_player,
+                isLockscreenPlayerEnabled = { lockscreenPlayerManager?.isEnabled == true }
             )
                 .apply {
                     setSmallIcon(R.drawable.ic_launcher_nobg)
@@ -635,6 +640,7 @@ class MusicService :
 
         val sessionToken = SessionToken(this, ComponentName(this, MusicService::class.java))
         val controllerFuture = MediaController.Builder(this, sessionToken).buildAsync()
+        internalControllerFuture = controllerFuture
         controllerFuture.addListener({ controllerFuture.get() }, MoreExecutors.directExecutor())
 
         connectivityManager = getSystemService()!!
@@ -1284,6 +1290,12 @@ class MusicService :
 
     private fun stopOnError() {
         player.pause()
+    }
+
+    fun updateLockscreenMediaPresentation() {
+        if (::mediaSession.isInitialized) {
+            updateNotification()
+        }
     }
 
     private fun updateNotification() {
@@ -3200,6 +3212,24 @@ class MusicService :
         lockscreenPlayerManager?.stop()
         lockscreenPlayerManager = null
 
+        internalControllerFuture?.let {
+            try {
+                MediaController.releaseFuture(it)
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error releasing internal controller on destroy")
+            }
+            internalControllerFuture = null
+        }
+
+        try {
+            stopForeground(STOP_FOREGROUND_REMOVE)
+            val nm = getSystemService(NotificationManager::class.java)
+            nm?.cancel(NOTIFICATION_ID)
+            nm?.cancelAll()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error cancelling notifications on destroy")
+        }
+
         try {
             unregisterReceiver(screenStateReceiver)
         } catch (e: Exception) {
@@ -3222,7 +3252,17 @@ class MusicService :
         } finally {
             fadingLoudnessEnhancer = null
         }
-        mediaSession.release()
+        if (::mediaSession.isInitialized && !isMediaSessionReleased) {
+            isMediaSessionReleased = true
+            try {
+                removeSession(mediaSession)
+            } catch (_: Exception) {}
+            try {
+                mediaSession.release()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Failed releasing mediaSession on destroy")
+            }
+        }
         player.removeListener(this)
         player.removeListener(sleepTimer)
         playerSilenceProcessors.remove(player)
@@ -3234,20 +3274,92 @@ class MusicService :
 
     override fun onBind(intent: Intent?) = super.onBind(intent) ?: binder
 
-    override fun onTaskRemoved(rootIntent: Intent?) {
-        super.onTaskRemoved(rootIntent)
-        val stopOnTaskClear = dataStore.get(StopMusicOnTaskClearKey, true)
-        if (::player.isInitialized && (!player.isPlaying || stopOnTaskClear)) {
-            Timber.tag(TAG).d("App task removed; stopping service (stopOnTaskClear=$stopOnTaskClear, isPlaying=${player.isPlaying})")
-            player.stop()
-            player.clearMediaItems()
+    fun teardownAndPurgeEverything() {
+        Timber.tag(TAG).d("teardownAndPurgeEverything: terminating service, purging all notifications & media session")
+
+        // 1. Unbind internal controller so Android allows service destruction
+        internalControllerFuture?.let {
+            try {
+                MediaController.releaseFuture(it)
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error releasing internal controller")
+            }
+            internalControllerFuture = null
+        }
+
+        // 2. Pause and clear player
+        if (::player.isInitialized) {
+            try {
+                player.pause()
+                player.stop()
+                player.clearMediaItems()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error stopping player")
+            }
+        }
+
+        // 3. Stop lockscreen player manager and dismiss any open LockscreenActivity
+        try {
+            lockscreenPlayerManager?.stop()
+            lockscreenPlayerManager = null
+            sendBroadcast(Intent(LockscreenActivity.ACTION_DISMISS).setPackage(packageName))
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error dismissing lockscreen player")
+        }
+
+        // 4. Remove foreground notification and purge all notification traces
+        try {
             stopForeground(STOP_FOREGROUND_REMOVE)
-            getSystemService(NotificationManager::class.java)?.cancel(NOTIFICATION_ID)
-            stopSelf()
+            val nm = getSystemService(NotificationManager::class.java)
+            nm?.cancel(NOTIFICATION_ID)
+            nm?.cancelAll()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error cancelling notifications")
+        }
+
+        // 5. Release MediaSession so Android SystemUI drops the Quick Settings / Lockscreen media resumption card
+        if (::mediaSession.isInitialized && !isMediaSessionReleased) {
+            isMediaSessionReleased = true
+            try {
+                removeSession(mediaSession)
+            } catch (_: Exception) {}
+            try {
+                mediaSession.release()
+            } catch (e: Exception) {
+                Timber.tag(TAG).e(e, "Error releasing mediaSession")
+            }
+        }
+
+        // 6. Stop Discord presence
+        try {
+            DiscordPresenceManager.stop()
+            discordUpdateJob?.cancel()
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Error stopping discord presence")
+        }
+
+        // 7. Stop the service
+        stopSelf()
+    }
+
+    override fun onTaskRemoved(rootIntent: Intent?) {
+        try {
+            sendBroadcast(Intent(LockscreenActivity.ACTION_DISMISS).setPackage(packageName))
+            val nm = getSystemService(NotificationManager::class.java)
+            nm?.cancel(LockscreenPlayerManager.LOCKSCREEN_NOTIFICATION_ID)
+        } catch (_: Exception) {}
+
+        val stopOnTaskClear = dataStore.get(StopMusicOnTaskClearKey, true)
+        Timber.tag(TAG).d("onTaskRemoved triggered: stopOnTaskClear=$stopOnTaskClear")
+        if (stopOnTaskClear) {
+            teardownAndPurgeEverything()
+        } else {
+            super.onTaskRemoved(rootIntent)
         }
     }
 
-    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo) = mediaSession
+    override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession? =
+        if (::mediaSession.isInitialized && !isMediaSessionReleased) mediaSession else null
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {

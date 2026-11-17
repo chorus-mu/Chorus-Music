@@ -4,6 +4,8 @@ import androidx.compose.foundation.horizontalScroll
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.focusGroup
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -110,6 +112,7 @@ import com.music.innertube.models.YTItem
 import com.music.innertube.utils.completed
 import com.music.innertube.utils.parseCookieString
 import com.music.innertube.YouTube
+import pushkar.chorus.music.constants.AutoSlideQuickPicksKey
 import pushkar.chorus.music.constants.GridItemSize
 import pushkar.chorus.music.constants.GridItemsSizeKey
 import pushkar.chorus.music.constants.GridThumbnailHeight
@@ -170,7 +173,9 @@ import pushkar.chorus.music.viewmodels.CommunityPlaylistItem
 import pushkar.chorus.music.viewmodels.HomeViewModel
 import kotlin.math.min
 import kotlin.random.Random
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -612,6 +617,7 @@ fun HomeScreen(
     val innerTubeCookie by rememberPreference(InnerTubeCookieKey, "")
     val (randomizeHomeOrder) = rememberPreference(RandomizeHomeOrderKey, true)
     val (showSpeedDial) = rememberPreference(ShowSpeedDialKey, true)
+    val (autoSlideQuickPicks) = rememberPreference(AutoSlideQuickPicksKey, true)
 
     val isLoggedIn = remember(innerTubeCookie) {
         "SAPISID" in parseCookieString(innerTubeCookie)
@@ -1316,28 +1322,55 @@ fun HomeScreen(
 
                                 item(key = "quick_picks_list") {
                                     val distinctQuickPicks = quickPicks.distinctBy { it.id }
-                                    val pagerState = rememberPagerState(pageCount = { distinctQuickPicks.size })
-                                    HorizontalPager(
-                                        state = pagerState,
-                                        contentPadding = PaddingValues(horizontal = 64.dp),
-                                        pageSpacing = 16.dp,
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .height(290.dp)
-                                    ) { index ->
-                                        val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
-                                        val scale = androidx.compose.ui.util.lerp(
-                                            start = 0.85f,
-                                            stop = 1f,
-                                            fraction = 1f - kotlin.math.abs(pageOffset).coerceIn(0f, 1f)
-                                        )
-                                        val alpha = androidx.compose.ui.util.lerp(
-                                            start = 0.5f,
-                                            stop = 1f,
-                                            fraction = 1f - kotlin.math.abs(pageOffset).coerceIn(0f, 1f)
+                                    if (distinctQuickPicks.isNotEmpty()) {
+                                        val itemCount = distinctQuickPicks.size
+                                        val virtualCount = if (itemCount > 1) 10_000 else itemCount
+                                        val initialPage = remember(distinctQuickPicks) {
+                                            if (itemCount > 1) (virtualCount / 2) - ((virtualCount / 2) % itemCount) else 0
+                                        }
+                                        val pagerState = rememberPagerState(
+                                            initialPage = initialPage,
+                                            pageCount = { virtualCount }
                                         )
 
-                                        val originalSong = distinctQuickPicks[index]
+                                        LaunchedEffect(pagerState, autoSlideQuickPicks, itemCount) {
+                                            if (!autoSlideQuickPicks || itemCount <= 1) return@LaunchedEffect
+                                            while (true) {
+                                                delay(4000L)
+                                                if (pagerState.isScrollInProgress) {
+                                                    snapshotFlow { pagerState.isScrollInProgress }
+                                                        .filter { !it }
+                                                        .first()
+                                                    delay(4000L)
+                                                }
+                                                pagerState.animateScrollToPage(
+                                                    page = pagerState.currentPage + 1,
+                                                    animationSpec = tween(durationMillis = 800, easing = FastOutSlowInEasing)
+                                                )
+                                            }
+                                        }
+
+                                        HorizontalPager(
+                                            state = pagerState,
+                                            contentPadding = PaddingValues(horizontal = 64.dp),
+                                            pageSpacing = 16.dp,
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(290.dp)
+                                        ) { index ->
+                                            val pageOffset = (pagerState.currentPage - index) + pagerState.currentPageOffsetFraction
+                                            val scale = androidx.compose.ui.util.lerp(
+                                                start = 0.85f,
+                                                stop = 1f,
+                                                fraction = 1f - kotlin.math.abs(pageOffset).coerceIn(0f, 1f)
+                                            )
+                                            val alpha = androidx.compose.ui.util.lerp(
+                                                start = 0.5f,
+                                                stop = 1f,
+                                                fraction = 1f - kotlin.math.abs(pageOffset).coerceIn(0f, 1f)
+                                            )
+
+                                            val originalSong = distinctQuickPicks[index % itemCount]
                                         val song by database.song(originalSong.id)
                                             .collectAsState(initial = originalSong)
                                         val isActive = song!!.id == mediaMetadata?.id
@@ -1443,6 +1476,7 @@ fun HomeScreen(
                                             }
                                         }
                                     }
+                                }
                                 }
                             }
                         }

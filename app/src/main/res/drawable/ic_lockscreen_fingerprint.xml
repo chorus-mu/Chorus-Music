@@ -1,0 +1,12 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="64dp"
+    android:height="64dp"
+    android:viewportWidth="64"
+    android:viewportHeight="64">
+    <!-- Exact clean Nothing OS / OEM in-display optical biometric target ring -->
+    <path
+        android:fillColor="#0DFFFFFF"
+        android:strokeColor="#E6FFFFFF"
+        android:strokeWidth="1.8"
+        android:pathData="M32,32m-27,0a27,27 0,1 1,54 0a27,27 0,1 1,-54 0" />
+</vector>

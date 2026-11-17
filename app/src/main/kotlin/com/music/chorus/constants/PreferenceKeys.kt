@@ -231,6 +231,7 @@ val PlaylistViewTypeKey = stringPreferencesKey("playlistViewType")
 
 val PlaylistEditLockKey = booleanPreferencesKey("playlistEditLock")
 val QuickPicksKey = stringPreferencesKey("discover")
+val AutoSlideQuickPicksKey = booleanPreferencesKey("autoSlideQuickPicks")
 val PreferredLyricsProviderKey = stringPreferencesKey("lyricsProvider")
 val LyricsProviderOrderKey = stringPreferencesKey("lyricsProviderOrder")
 val QueueEditLockKey = booleanPreferencesKey("queueEditLockV2")

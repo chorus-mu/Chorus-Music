@@ -63,7 +63,9 @@ jobs:
       with:
         tag_name: "v${{ steps.get_version.outputs.version }}"
         name: "Chorus Music - v${{ steps.get_version.outputs.version }}"
-        files: app/build/outputs/apk/release/Chorus-Music.apk
+        files: |
+          app/build/outputs/apk/release/Chorus-Music.apk
+          changelog.json
         draft: false
         prerelease: false
         token: ${{ secrets.MY_PAT }}
